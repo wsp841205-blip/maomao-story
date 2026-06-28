@@ -1,0 +1,5738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>猫猫的幼儿园故事</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F5F0E8;--card:#FFFDF8;
+  --green:#4A7A5A;--green-l:#E8F5EC;
+  --amber:#C8963A;--amber-l:#FDF5E6;
+  --blue:#5A8FA8;--blue-l:#EAF4F8;
+  --pink:#C06080;--pink-l:#FDE8EF;
+  --purple:#7A5AA8;--purple-l:#F0EAF8;
+  --text:#3A3226;--text2:#8A7A6A;
+  --shadow:0 4px 20px rgba(60,50,38,0.10);
+}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);min-height:100vh;color:var(--text)}
+
+/* ── 顶栏 ── */
+.topbar{background:var(--green);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-title{color:#fff;font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+.topbar-sub{color:rgba(255,255,255,0.8);font-size:12px}
+
+/* ── 屏幕 ── */
+.screen{display:none}.screen.on{display:block}
+.wrap{max-width:480px;margin:0 auto;padding:16px 16px 100px}
+
+/* ── 封面 ── */
+.cover-hero{text-align:center;padding:30px 20px 20px}
+.cover-emoji{font-size:80px;animation:bob 2.5s ease-in-out infinite;display:block;margin-bottom:12px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.cover-title{font-size:28px;font-weight:900;color:var(--green);margin-bottom:6px}
+.cover-sub{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+
+/* ── 故事列表 ── */
+.phase-title{font-size:12px;font-weight:800;color:var(--text2);padding:12px 4px 6px;letter-spacing:1px;text-transform:uppercase}
+.lesson-card{background:var(--card);border-radius:18px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s;border-left:4px solid transparent}
+.lesson-card:active{transform:scale(0.97)}
+.lesson-card.phase1{border-left-color:#C8963A}
+.lesson-card.phase2{border-left-color:#5A8FA8}
+.lesson-card.phase3{border-left-color:#7A5AA8}
+.lesson-card.phase4{border-left-color:#4A7A5A}
+.lesson-card.phase5{border-left-color:#C06080}
+.lesson-card.phase6{border-left-color:#C8963A}
+.lesson-num{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;flex-shrink:0;color:white}
+.lesson-info .name{font-size:15px;font-weight:800;color:var(--text)}
+.lesson-info .sub{font-size:12px;color:var(--text2);margin-top:2px}
+.lesson-info .emotion{font-size:11px;font-weight:700;margin-top:3px}
+
+/* ── 播放页 ── */
+.story-header{background:var(--green);padding:14px 18px;display:flex;align-items:center;gap:12px}
+.back-btn{background:none;border:none;color:rgba(255,255,255,0.9);font-size:15px;font-weight:800;cursor:pointer;padding:0}
+.story-title{color:#fff;font-size:16px;font-weight:800;flex:1}
+.story-phase{background:rgba(255,255,255,0.2);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+
+/* ── 进度条 ── */
+.story-progress{background:rgba(255,255,255,0.3);height:4px}
+.story-progress-fill{height:100%;background:rgba(255,255,255,0.8);transition:width 0.5s ease;width:0%}
+
+/* ── 当前段落显示 ── */
+.story-player{background:var(--card);margin:16px;border-radius:20px;padding:0;overflow:hidden;box-shadow:var(--shadow)}
+
+.seg-header{padding:14px 18px 0;display:flex;align-items:center;gap:10px}
+.seg-role-icon{font-size:28px;flex-shrink:0}
+.seg-role-name{font-size:13px;font-weight:800}
+.seg-role-badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;margin-top:2px;display:inline-block}
+
+.seg-text{padding:14px 18px;font-size:17px;font-weight:600;line-height:1.8;color:var(--text)}
+.seg-text.narrator{font-size:15px;color:var(--text2);font-style:italic;font-weight:400}
+.seg-text.english{font-size:22px;font-weight:900;letter-spacing:1px;color:var(--blue);background:var(--blue-l);padding:12px 18px;margin:0;border-radius:0}
+
+/* ── 波形 ── */
+.wave-bar{display:flex;align-items:flex-end;justify-content:center;gap:4px;height:32px;padding:0 18px 10px}
+.wb{width:6px;border-radius:3px;height:4px;background:var(--green);opacity:0.5}
+.wave-bar.playing .wb:nth-child(1){animation:wa 0.5s infinite alternate}
+.wave-bar.playing .wb:nth-child(2){animation:wb2 0.4s infinite alternate}
+.wave-bar.playing .wb:nth-child(3){animation:wc 0.6s infinite alternate}
+.wave-bar.playing .wb:nth-child(4){animation:wb2 0.45s infinite alternate}
+.wave-bar.playing .wb:nth-child(5){animation:wa 0.55s infinite alternate}
+.wave-bar.playing .wb:nth-child(6){animation:wc 0.5s infinite alternate}
+@keyframes wa{to{height:24px;opacity:1}}@keyframes wb2{to{height:18px;opacity:1}}@keyframes wc{to{height:12px;opacity:1}}
+
+/* ── 控制区 ── */
+.story-controls{padding:12px 16px 16px;display:flex;gap:10px}
+.ctrl-btn{flex:1;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;color:#fff;transition:transform 0.1s;display:flex;align-items:center;justify-content:center;gap:6px}
+.ctrl-btn:active{transform:scale(0.96)}
+.btn-play{background:linear-gradient(135deg,var(--green),#3A6A48);box-shadow:0 4px 14px rgba(74,122,90,0.3)}
+.btn-pause{background:linear-gradient(135deg,var(--amber),#A07020)}
+.btn-prev{flex:0 0 auto;padding:14px 16px;background:linear-gradient(135deg,#8A8A7A,#6A6A5A)}
+.btn-next{flex:0 0 auto;padding:14px 16px;background:linear-gradient(135deg,var(--blue),#3A6F88)}
+
+/* ── 段落列表 ── */
+.seg-list{margin:0 16px 16px}
+.seg-item{padding:10px 14px;border-radius:12px;margin-bottom:6px;cursor:pointer;transition:all 0.2s;display:flex;gap:10px;align-items:flex-start;border:2px solid transparent}
+.seg-item.active{border-color:var(--green);background:var(--green-l)}
+.seg-item.done{opacity:0.5}
+.seg-item-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.seg-item-text{font-size:13px;line-height:1.5;color:var(--text)}
+.seg-item.en .seg-item-text{color:var(--blue);font-weight:700}
+
+/* ── 完成卡 ── */
+.finish-card{background:linear-gradient(135deg,#C8963A,#A07020);border-radius:20px;padding:24px 20px;margin:16px;text-align:center;color:#fff;display:none}
+.finish-card.show{display:block}
+.finish-card h3{font-size:22px;margin:10px 0 6px}
+.finish-card p{font-size:14px;opacity:0.9;line-height:1.6}
+.finish-review{background:var(--card);border-radius:16px;margin:16px;padding:16px}
+.review-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:12px}
+.review-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0E8D8;font-size:14px}
+.review-item:last-child{border-bottom:none}
+.review-zh{color:var(--text2)}
+.review-en{color:var(--blue);font-weight:700}
+
+/* ── 加载 ── */
+.loading-line{height:3px;background:var(--green-l);overflow:hidden;display:none}
+.loading-line.on{display:block}
+.loading-fill{height:100%;background:var(--green);animation:loading 1.5s ease-in-out infinite}
+@keyframes loading{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
+
+/* ── 角色颜色 ── */
+.wechat-tip{
+  position:fixed;inset:0;background:rgba(0,0,0,0.88);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;color:#fff;text-align:center;padding:30px;
+}
+.wechat-tip h2{font-size:24px;font-weight:900;margin-bottom:10px}
+.wechat-tip p{font-size:15px;opacity:0.9;line-height:1.7;margin-bottom:16px}
+.wechat-arrow{font-size:22px;font-weight:900;color:#FFD93D;margin-bottom:6px}
+.wechat-btn{background:#4A7A5A;color:#fff;border:none;border-radius:16px;
+  padding:14px 28px;font-size:16px;font-weight:800;cursor:pointer;margin-top:8px}
+.wechat-skip{background:none;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.3);
+  border-radius:12px;padding:8px 20px;font-size:13px;cursor:pointer;margin-top:10px}
+
+.role-narrator{color:var(--text2)}
+.role-mum{color:var(--pink)}
+.role-koko{color:var(--green)}
+.role-meimei{color:var(--purple)}
+.role-doudou{color:var(--blue)}
+.role-dingding{color:var(--amber)}
+.role-teacher{color:#5A7A3A}
+.role-evan{color:var(--amber)}
+
+.badge-narrator{background:var(--bg);color:var(--text2)}
+.badge-mum{background:var(--pink-l);color:var(--pink)}
+.badge-koko{background:var(--green-l);color:var(--green)}
+.badge-meimei{background:var(--purple-l);color:var(--purple)}
+.badge-doudou{background:var(--blue-l);color:var(--blue)}
+.badge-dingding{background:var(--amber-l);color:var(--amber)}
+.badge-teacher{background:#E8F5E8;color:#5A7A3A}
+.badge-evan{background:var(--amber-l);color:var(--amber)}
+</style>
+</head>
+<body>
+
+<!-- ══ 微信检测弹窗 ══ -->
+<div id="locked-tip" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);color:#fff;padding:16px 28px;border-radius:16px;font-size:15px;z-index:9999;text-align:center;pointer-events:none">
+  🔒 敬请期待，即将开放
+</div>
+<div class="wechat-tip" id="wechat-tip" style="display:none">
+  <div style="font-size:56px;margin-bottom:14px">🐱</div>
+  <h2>请用浏览器打开</h2>
+  <p>微信内置浏览器限制音频播放<br>需要用手机浏览器才能听到故事声音</p>
+  <div class="wechat-arrow">👆 点右上角 ···</div>
+  <div style="font-size:20px;font-weight:900;color:#FFD93D;margin-bottom:16px">选"在浏览器中打开"</div>
+  <button class="wechat-btn" onclick="dismissTip()">我已在浏览器中，继续</button>
+  <br>
+  <button class="wechat-skip" onclick="dismissTip()">忽略，继续使用</button>
+</div>
+
+<!-- ══ 故事列表 ══ -->
+<div class="screen on" id="s-list">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">🐱 猫猫的幼儿园故事</div>
+      <div class="topbar-sub">20集 · 沉浸式中英双语故事</div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="cover-hero">
+      <span class="cover-emoji">🐱</span>
+      <div class="cover-title">猫猫的幼儿园故事</div>
+      <div class="cover-sub">跟着小花猫猫猫，<br>从害怕到喜欢幼儿园，<br>一起学英语，一起长大。</div>
+    </div>
+    <div id="lesson-list"></div>
+  </div>
+</div>
+
+<!-- ══ 故事播放页 ══ -->
+<div class="screen" id="s-play">
+  <div class="story-header">
+    <button class="back-btn" onclick="backToList()">← 返回</button>
+    <button id="mode-btn" onclick="toggleMode()" style="background:none;border:1px solid rgba(255,255,255,0.4);color:white;border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer">🎧 聆听</button>
+    <div class="story-title" id="play-title">第1集</div>
+    <div class="story-phase" id="play-phase">适应期</div>
+  </div>
+  <div class="story-progress"><div class="story-progress-fill" id="progress-fill"></div></div>
+  <div class="loading-line" id="loading-line"><div class="loading-fill"></div></div>
+
+  <!-- 重复设置 -->
+  <div class="repeat-box">
+    <div>
+      <div class="repeat-label">🔁 重复播放</div>
+      <div class="repeat-sub" id="repeat-sub">播完整集 1 次后停止</div>
+    </div>
+    <div class="repeat-ctrl">
+      <button class="rep-btn" onclick="changeRepeat(-1)">−</button>
+      <div class="rep-num" id="rep-num">1</div>
+      <button class="rep-btn" onclick="changeRepeat(1)">+</button>
+    </div>
+  </div>
+
+  <!-- 主播放卡片 -->
+  <div class="story-player">
+    <div class="seg-header">
+      <div class="seg-role-icon" id="seg-icon">🎙️</div>
+      <div>
+        <div class="seg-role-name" id="seg-role">旁白</div>
+        <div class="seg-role-badge badge-narrator" id="seg-badge">中文旁白</div>
+      </div>
+    </div>
+    <div class="seg-text" id="seg-text">准备开始...</div>
+    <div class="round-badge" id="round-badge"></div>
+    <div class="wave-bar" id="wave-bar">
+      <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+      <div class="wb"></div><div class="wb"></div><div class="wb"></div>
+    </div>
+    <div class="story-controls">
+      <button class="ctrl-btn btn-prev" onclick="skipSeg(-1)">⏮</button>
+      <button class="ctrl-btn btn-play" id="play-btn" onclick="togglePlay()">▶ 开始播放</button>
+      <button class="ctrl-btn btn-next" onclick="skipSeg(1)">⏭</button>
+    </div>
+  </div>
+
+  <!-- 只显示英语句子 -->
+  <div class="en-list">
+    <div class="en-list-title">🇺🇸 本集英语句子（点击跳转）</div>
+    <div id="en-list"></div>
+  </div>
+
+  <div class="finish-card" id="finish-card">
+    <div style="font-size:50px">🎉</div>
+    <h3 id="finish-title">第1集完成！</h3>
+    <p id="finish-msg">猫猫今天学会了打招呼！</p>
+  </div>
+  <div class="finish-review" id="finish-review" style="display:none">
+    <div class="review-title">📚 今日英语回顾</div>
+    <div id="review-list"></div>
+  </div>
+</div>
+
+
+<script>
+// ══ 故事数据 ══
+const LESSONS = [
+  {
+    "id": 1,
+    "title": "第一天到幼儿园门口",
+    "phase": "适应期",
+    "phaseClass": "phase1",
+    "emoji": "🐱",
+    "emotion": "😨 害怕 → 第一步勇气",
+    "color": "#C8963A",
+    "review": [
+      {
+        "zh": "我们到了",
+        "en": "We are here."
+      },
+      {
+        "zh": "早上好",
+        "en": "Good morning."
+      },
+      {
+        "zh": "我叫猫猫",
+        "en": "My name is Maomao."
+      },
+      {
+        "zh": "很高兴认识你",
+        "en": "Nice to meet you."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "今天的太阳，好像和平时一样。可是猫猫觉得，一点也不一样。因为今天，是他第一次去幼儿园。妈妈早早就起床了，给猫猫准备了他最喜欢的小书包——上面印着一辆橙色的小汽车。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈牵着猫猫走到幼儿园门口。猫猫的脚步越来越慢，走到门口，停下来了——他抱住妈妈的腿，不撒手。门口有好多小朋友，有的在笑，有的在跑，还有一个小朋友，正趴在妈妈身上哭。猫猫看着看着，嘴巴也扁了。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，我们到了。用英语说就是——We are here. We are here，就是我们到了。来，跟妈妈说一遍。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫点点头，但还是抱着妈妈不撒手。眼泪已经跑到眼睛边了——马上就要哭出来了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "We are here!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈……你也进去吧。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "妈妈在外面等你。猫猫进去，妈妈就在门口。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫慢慢松开妈妈的腿，眼睛红红的，嘴巴还是扁着——就在这时，旁边传来一个声音——"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "你好你好！你也是今天第一天来吗？我叫可可，小袋鼠可可！我们做朋友吧！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫抬起头——一只胖乎乎的小袋鼠，背着绿色的小书包，正对着他笑，笑得眼睛弯成了两道月亮。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫愣了一下。眼泪还挂在眼睛边上，但是——忘了哭。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "我第一天也紧张！不过老师一点都不可怕！你信我！"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "老师待会会走过来问你——\"What's your name?\" 就是\"你叫什么名字？\"的意思！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "What's your name……",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "对！然后你就回答——My name is Maomao！像我这样说！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "My name is Maomao!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "这时候，一只穿着红色衣服的小兔子走了出来，她张开双臂，像要把所有小朋友都抱进来一样——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Good morning, everyone!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "小朋友们一个接一个跟着说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Good morning! Good morning!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Good morning就是早上好！跟着说！跟着就会了！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "What's your name?",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "可可刚才教的！What's your name，就是问我叫什么名字！猫猫深吸一口气——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "My name is Maomao!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Wonderful, Maomao! Nice to meet you!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师笑着朝猫猫竖起大拇指。猫猫的心，扑通扑通跳了一下。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！老师说Nice to meet you，你也说！快！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Nice to meet you!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走进教室门的那一刹那，猫猫忍不住回头。妈妈还站在门口，一直笑着朝他挥手。就是那一眼——眼泪掉下来了，一颗，悄悄地，顺着脸流下去。猫猫赶紧低下头，用袖子擦掉了。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "走走走！我带你去看我的积木！好多好多！走呀！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫跟着可可走进了教室。手被可可拉着，他往前走了一步。就一步。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "叮铃铃——放学了。猫猫的头第一个抬起来，眼睛直直地盯着教室门口，一动不动。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫！妈妈来了！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫一看到妈妈，什么都来不及说，马上跑过去，扑进妈妈怀里。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "然后，哭了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "不是小声地哭，是憋了一整天的那种哭。肩膀一抖一抖的，眼泪湿了妈妈的衣服。妈妈没有说话，只是抱着他，轻轻拍着他的背。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫把脸埋进妈妈衣服里，哭着哭着，慢慢地，手松开了一点。停下来了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上了车，坐好了，妈妈才轻轻问——"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "今天怎么样？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我认识了一个叫可可的小袋鼠！他第一天也紧张！他教我说英语！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "哦？教了什么？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Good morning！老师问What's your name，就是问我叫什么名字，我说My name is Maomao！老师说Nice to meet you，可可提醒我也说——我说Nice to meet you！老师还给我竖大拇指了！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "哇，猫猫今天已经会说这么多英语啦！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "……妈妈，明天还要去吗？"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "要去的。但是妈妈每天都会来接你。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "那你早点来哦。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "好。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "今天，猫猫还是害怕。可是今天，他已经自己走进了幼儿园。他忽然发现——原来，害怕的时候，也可以往前走一步。勇敢，不是不害怕。勇敢，是害怕的时候，还愿意往前走一步。"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "猫猫要上厕所了",
+    "phase": "适应期",
+    "phaseClass": "phase1",
+    "emoji": "🚽",
+    "emotion": "😣 忍着 → 第一次自己解决问题",
+    "color": "#C8963A",
+    "review": [
+      {
+        "zh": "我要上厕所",
+        "en": "I need to pee."
+      },
+      {
+        "zh": "厕所在哪里",
+        "en": "Where is the toilet?"
+      },
+      {
+        "zh": "我需要纸",
+        "en": "I need some paper."
+      },
+      {
+        "zh": "我洗好手了",
+        "en": "I need to wash my hands."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第二天早上，猫猫坐在妈妈的车后座上，小手攥着书包带子。车快到幼儿园了，手抓得更紧了。心里悄悄想——今天，还会见到那个小袋鼠可可吗？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，今天你还是要来接我吗？"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "妈妈每天都来接你。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "……几点来？"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "和昨天一样，放学就来。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈……我想回家。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "妈妈知道。但是猫猫昨天去了，今天也可以的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫没有说话，只是点了点头，很小很小的一下。手还是攥着书包带子。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈把他送到幼儿园门口。猫猫站在门口，抱住妈妈不肯走，眼泪又出来了。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，放学了，妈妈来接你。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "……不要。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "就在这时，教室里跑出来一只绿色书包的小袋鼠——"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！！你来了！！我等你好久了！快来！我昨天搭了一半的积木还在等你！！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫抬起头，眼泪还挂着。可可已经伸手来拉他了。猫猫回头看了一眼妈妈——"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "去吧。放学了，妈妈就来接你。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫低下头，被可可拉着，一步一步走进了教室。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫放下书包，和可可搭起了积木。搭着搭着，肚子里突然——咕噜一声。不是饿了，是……要上厕所了。猫猫的耳朵红了，他悄悄夹紧了腿，假装没事，继续搭积木。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "但是越忍越难受。猫猫开始扭来扭去，积木也搭歪了。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫，你怎么一直扭来扭去？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我……我要上厕所。可是我不知道厕所在哪里……"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "我第一天也是！我一直不敢说。后来老师自己发现了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "就在这时，兔子老师走了过来，蹲到猫猫面前，轻轻问——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, do you need to use the toilet?",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫用力点了点头。老师笑着站起来，伸出手——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Follow me!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师带猫猫走到厕所门口——就在教室旁边，门上画着一个小马桶。猫猫看了一眼，心里想：原来厕所在这里。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Next time, just tell me: I need to pee. Can you say that?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I need to pee.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Good! And if you can't find the toilet, you can ask me: Where is the toilet?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Where is the toilet?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Perfect! Go ahead!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "可可也跟了过来，站在厕所门口，双手背在背后，一本正经地等着。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "门轻轻关上了。外面的声音一下子变小了。猫猫忽然发现——这里只有他自己。没有可可，没有妈妈，没有老师。只有他。猫猫低头看了看自己的小爪子，深吸一口气——好吧。我可以的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上完厕所，猫猫想找纸，可是纸放在哪里呢？他敲了敲门，大声说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I need some paper!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "One moment!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师把纸递进来了。猫猫接过纸。原来，遇到不会的事情，说出来，就会有人帮助你。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "门开了。猫猫走出来，一抬头——可可还站在那里，眼睛亮亮的。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "你好了吗！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "……你在这里干什么。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "等你啊！！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "出来之后，猫猫没有等可可提醒。他走向洗手台，小声说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I need to wash my hands.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "可可正要跑过去，突然停下来——"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！你自己都记得洗手啦！！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Good job, Maomao!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Thank you!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "叮铃铃——放学了。妈妈走进教室，猫猫一眼就看见她了。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "今天怎么样？"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫想了想。低下头，又抬起来——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈……今天我自己上厕所了！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "哇！你自己去了？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "嗯！我跟老师说——I need to pee！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "真棒！还学了什么？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Where is the toilet！I need some paper！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "嗯？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "你真的来了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈笑了笑。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "妈妈答应过你呀。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫牵着妈妈的手往外走。今天，他的脚步轻了一点。原来，第一次做一件事的时候，会紧张。可做完以后，才发现——自己也可以。"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "午饭来了，全是没见过的东西",
+    "phase": "适应期",
+    "phaseClass": "phase1",
+    "emoji": "🍝",
+    "emotion": "😐 陌生 → 开始好奇",
+    "color": "#C8963A",
+    "review": [
+      {
+        "zh": "我饿了",
+        "en": "I'm hungry."
+      },
+      {
+        "zh": "这是什么",
+        "en": "What's this?"
+      },
+      {
+        "zh": "好好吃",
+        "en": "It's delicious!"
+      },
+      {
+        "zh": "我不喜欢这个",
+        "en": "I don't like this."
+      },
+      {
+        "zh": "可以再给我一点吗",
+        "en": "Can I have some more?"
+      },
+      {
+        "zh": "我可以喝水吗",
+        "en": "Can I have some water?"
+      },
+      {
+        "zh": "我吃饱了",
+        "en": "I'm full."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第三天，妈妈送猫猫到幼儿园门口。猫猫回头看了妈妈一眼，妈妈说：去吧，可可在等你呢。猫猫点点头，走进了教室。可可和咩咩已经在位置上坐着了。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！快来，坐我旁边！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "渐渐地，猫猫发现今天好像没有那么害怕了。就在这时——叮铃铃！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Lunch time!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师推来了一辆小推车，上面放着一盘一盘的食物。香味飘过来，猫猫的肚子咕噜噜叫了起来。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我好饿……"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！饿了用英语说I'm hungry！跟我说！快！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I'm hungry.",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "再大声一点！冲！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I'm hungry!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师把食物放到猫猫面前。猫猫低头一看——有一根一根长长的面条，有绿色的叶子，有一块金黄色圆圆的东西，还有一碗热腾腾冒着白雾的汤。猫猫从来没见过这些。他皱起眉头，悄悄问可可——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "可可……这是什么？"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "不认识就问老师！说What's this！去！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "What's this?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is pasta! Try it!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫鼓起勇气，叉起一口，放进嘴里——眼睛突然亮了！"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "It's delicious！就是好吃！说！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "It's delicious!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "可是老师又端来了一盘绿色的蔬菜。猫猫看了看，皱起了鼻子。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "不喜欢就说I don't like this！摇头！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I don't like this…",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "That's okay, Maomao!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "吃了一会儿，猫猫发现意大利面太好吃了，盘子里的都吃完了，还想再要一点。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "还想要！！我要学！！就说Can I have some more！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Can I have some more?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Of course! Here you go!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "吃了一半，猫猫口渴了。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "渴了就说Can I have some water！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Can I have some water?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Here's your water, Maomao!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "终于，猫猫把盘子里的东西都吃完了。他放下叉子，摸了摸肚子——圆鼓鼓的，满满的。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "I'm full！吃饱了！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I'm full!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫心里想——今天他自己问了What's this，自己说了I don't like this，自己要了more，自己要了water，还把饭都吃完了。而且……意大利面，真的好好吃。放学了，妈妈走进来。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！今天有意大利面！我问老师What's this，老师说是pasta！It's delicious！超级好吃！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫拉着妈妈往外走，脚步轻快。意大利面很好吃，但他心里悄悄想——还是妈妈做的方便面最香。"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "老师拿出了一篮子水果",
+    "phase": "适应期",
+    "phaseClass": "phase1",
+    "emoji": "🍎",
+    "emotion": "😊 好奇 → 发现规律",
+    "color": "#C8963A",
+    "review": [
+      {
+        "zh": "苹果",
+        "en": "Apple."
+      },
+      {
+        "zh": "香蕉",
+        "en": "Banana."
+      },
+      {
+        "zh": "橙子",
+        "en": "Orange."
+      },
+      {
+        "zh": "西瓜",
+        "en": "Watermelon."
+      },
+      {
+        "zh": "草莓",
+        "en": "Strawberry."
+      },
+      {
+        "zh": "葡萄",
+        "en": "Grapes."
+      },
+      {
+        "zh": "芒果",
+        "en": "Mango."
+      },
+      {
+        "zh": "菠萝",
+        "en": "Pineapple."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第四天，猫猫走进幼儿园，这一次，他没有回头看。上午的课很有趣，老师带着大家唱了一首歌，猫猫不会唱，但是跟着哼了哼，感觉还不错。下午，老师推来了一个大大的篮子，放在教室中间。篮子里装满了五颜六色的东西。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "可可，那是什么？"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "水果课！！老师举什么，你就看！举什么就是什么的英文！看仔细！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师走到篮子旁边，伸手拿出第一样东西——红色的，圆圆的，猫猫一眼就认出来了。那是苹果！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is an apple! Apple!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "可可！老师举的是苹果，她说Apple——那Apple就是苹果的英文！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Apple.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师又拿出了第二样——黄色的，弯弯的，像一个小月亮。那是香蕉！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a banana! Banana!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Banana就是香蕉！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Banana.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师拿出第三样——橙色的，圆圆的。那是橙子！这一次，猫猫没有问可可，他自己想了想——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is an orange! Orange!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "老师举的是橙子……她说Orange……那Orange，就是橙子！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Orange.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师费力地抱出来一个大东西——绿色的皮，圆滚滚的，超级大！整个教室的小朋友都哇了一声。那是西瓜！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a watermelon! Watermelon!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Watermelon！就是西瓜！我发现规律了——老师举什么，说的就是什么的英文！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Watermelon.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a strawberry! Strawberry!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Strawberry.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is grapes! Grapes!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Grapes.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a mango! Mango!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Mango.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a pineapple! Pineapple!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Pineapple！就是菠萝！因为我知道了——老师举什么，说的就是什么的英文名字！英文原来是这样学的！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Pineapple.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师把切好的水果一小盘一小盘地分给大家。猫猫拿起一块西瓜，咬了一口——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "It's delicious!!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！妈妈！我今天发现了一个秘密！老师举起什么，说的就是什么的英语名字！Apple，Banana，Orange，Watermelon，Strawberry，Grapes，Mango，Pineapple！我全部都会！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫拉着妈妈走出教室，一路上嘴里还在说Apple，Banana，Orange……今天，猫猫发现了一件很重要的事——英文，其实就是他认识的东西，换了一个名字而已。没有那么难。"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "猫猫认识了小羊咩咩",
+    "phase": "适应期",
+    "phaseClass": "phase1",
+    "emoji": "🐑",
+    "emotion": "🥰 温暖 → 从被帮助到帮助别人",
+    "color": "#C8963A",
+    "review": [
+      {
+        "zh": "面包",
+        "en": "Bread."
+      },
+      {
+        "zh": "汉堡",
+        "en": "Burger."
+      },
+      {
+        "zh": "披萨",
+        "en": "Pizza."
+      },
+      {
+        "zh": "三明治",
+        "en": "Sandwich."
+      },
+      {
+        "zh": "意大利面",
+        "en": "Pasta."
+      },
+      {
+        "zh": "薯条",
+        "en": "French fries."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第五天，猫猫背着书包走进教室。可可旁边坐着一个人——一只小羊，白色的卷毛，戴着一顶粉红色的小帽子，眼睛圆溜溜的。她站在那里，眼睛红红的，像是刚刚哭过。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！这是咩咩！小羊咩咩！她今天是第一天来！跟你之前一样！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫看着咩咩，想起了自己第一天——那时候他也紧紧拉着妈妈的手，不知道该怎么办。他走到咩咩旁边，坐下来，轻轻说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "咩咩，你好。我叫猫猫，我是小花猫。我第一天来的时候，也哭了。"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "真的吗？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "真的。但是后来我认识了可可，就没那么害怕了。现在我们三个一起玩，好不好？"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "好……"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午是西餐日，老师推来了一辆小推车。咩咩看着那些东西，眼睛睁得大大的。"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "猫猫……那是什么。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "咩咩，不认识的东西，就问老师——What's this? 老师会告诉你的！"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "What's this?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is bread! Bread!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Bread.",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Bread.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a burger! Burger!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Burger.",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Burger.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is pizza! Pizza!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Pizza.",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Pizza.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a sandwich! Sandwich!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Sandwich.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is pasta! Pasta!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "咩咩！Pasta就是意大利面！上次我吃过，It's delicious！超级好吃！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Pasta.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is French fries!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "French fries.",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "French fries.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师把食物都摆好，猫猫拿起一片披萨，咬了一口——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "It's delicious!",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "It's delicious!!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "咩咩吃完了，想再要一点薯条。"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "猫猫，再给我一点……怎么说？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Can I have some more? 跟我说！"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Can I have some more?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Of course! Here you go!",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Thank you!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "吃完饭，咩咩看着猫猫，小声说——"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "猫猫，谢谢你。你是我第一个朋友。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我们是朋友了吗？"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "朋友！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫站在那里，心里暖暖的。刚才帮咩咩说\"Can I have some more?\"的时候，那句话就像自己从嘴里跑出来一样——原来，用出来的英语，和背出来的英语，感觉是不一样的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，咩咩挥手说——"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "明天见！猫猫！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "明天见！咩咩！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！我今天认识了咩咩！她是小羊，我教了她好多英语！她问老师要了好多薯条！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫牵着妈妈走出幼儿园，心里暖暖的。今天，他教了咩咩英语，就像之前可可教他一样。原来，被人帮助和帮助别人，都是一样温暖的感觉。"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "下午茶小推车来了",
+    "phase": "探索好奇期",
+    "phaseClass": "phase2",
+    "emoji": "🍦",
+    "emotion": "😄 兴奋 → 主动开口要东西",
+    "color": "#5A8FA8",
+    "review": [
+      {
+        "zh": "牛奶",
+        "en": "Milk."
+      },
+      {
+        "zh": "果汁",
+        "en": "Juice."
+      },
+      {
+        "zh": "饼干",
+        "en": "Cookie."
+      },
+      {
+        "zh": "蛋糕",
+        "en": "Cake."
+      },
+      {
+        "zh": "冰淇淋",
+        "en": "Ice cream."
+      },
+      {
+        "zh": "下午茶时间",
+        "en": "Snack time!"
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第六天，妈妈送猫猫到幼儿园门口。猫猫背着小书包，冲妈妈挥了挥手——妈妈再见！然后就跑进去了。可可和咩咩已经在教室里等他了。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！快来！我们在拼图！"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Good morning，猫猫！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Good morning!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午，教室里传来一阵轻轻的声音——咕噜噜……不只是猫猫，连可可和咩咩的肚子都在叫。就在这时——门开了！老师推来了一辆小推车，上面摆满了各种各样的东西，香味飘过来……"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Snack time!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Snack time！！下午茶！！每天都有！我最喜欢了！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Snack time……我记住了！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师先拿起一个透明的杯子，里面装着白色的液体。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is milk! Milk!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "可可！老师举的是牛奶！所以Milk就是牛奶！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Milk.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is juice! Juice!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Juice……就是果汁！橙色的，甜甜的！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Juice.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Can I have some juice?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Of course, Maomao!",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Can I have some juice?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Sure! Here you go!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a cookie! Cookie!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Cookie！！饼干！！给我给我！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Cookie.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师把饼干分给大家，猫猫咬了一口——咔嚓！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "It's delicious!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师又端来了一个圆形的，上面插着蜡烛，奶油白白的——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is cake! Cake!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Cake！！蛋糕！！今天Benny生日！！有蛋糕！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Cake.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "大家一起唱生日歌——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Happy birthday to you! Happy birthday dear Benny! Happy birthday to you!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "最后，老师端来了一个方形的盒子，打开来，里面是白色的，凉凉的，散发着冷冷的雾气——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Ice cream!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Ice cream!!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！你自己说出来了！！"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Ice cream!!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "三个人一起跳，老师笑着说——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Sit down please!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "三个人赶紧坐好，但还是忍不住笑。猫猫捧着自己的小杯子，舔了一口——凉凉的，甜甜的，化在嘴里。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "It's delicious……",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来，看到猫猫正在跟可可和咩咩聊天，没有冲过来，只是站在门口，静静地看着。过了一会儿，猫猫抬起头，看到妈妈了——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！今天有冰淇淋！Ice cream！It's delicious！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫牵着妈妈往外走，还回头对可可和咩咩喊——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "可可！咩咩！明天见！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "今天，妈妈来接他的时候，他正在聊天，都忘记看门口了。幼儿园，开始变成一个有趣的地方了。"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "猫猫的停车场",
+    "phase": "探索好奇期",
+    "phaseClass": "phase2",
+    "emoji": "🚗",
+    "emotion": "😆 发现喜好 → 遇见豆豆",
+    "color": "#5A8FA8",
+    "review": [
+      {
+        "zh": "红色",
+        "en": "Red."
+      },
+      {
+        "zh": "蓝色",
+        "en": "Blue."
+      },
+      {
+        "zh": "黄色",
+        "en": "Yellow."
+      },
+      {
+        "zh": "绿色",
+        "en": "Green."
+      },
+      {
+        "zh": "白色",
+        "en": "White."
+      },
+      {
+        "zh": "黑色",
+        "en": "Black."
+      },
+      {
+        "zh": "粉红色",
+        "en": "Pink."
+      },
+      {
+        "zh": "橙色",
+        "en": "Orange."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第七天早上，猫猫走到幼儿园门口，一边走一边说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "停车坐爱枫林晚，霜叶红于二月花！妈妈再见！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走进教室，猫猫放下书包，突然看到——教室角落里，有一个大大的积木箱子，里面装满了各种颜色的积木。红色的，蓝色的，黄色的，绿色的……猫猫的眼睛，一下子亮了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "积木……"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫，你喜欢积木？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我在家有好多积木，我会搭停车场！就是把积木搭成一排一排的格子，然后把小汽车停进去，每辆车都有自己的位置！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午的课，老师带来了一盒彩色颜料，告诉大家——今天是美术课，学习颜色！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is red! Red!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Red……红色……停车坐爱枫林晚，霜叶红于二月花……枫叶是红色的，Red！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Red.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is blue! Blue!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Blue……蓝色……春水碧于天，蓝色就是Blue！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Blue.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is yellow! Yellow!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Yellow……黄色……Yellow！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Yellow.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is green! Green!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Green！绿色！碧玉妆成一树高，万条垂下绿丝绦——就是Green！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Green.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is white! White!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "White……白色……千山鸟飞绝，万径人踪灭，孤舟蓑笠翁，独钓寒江雪……雪是白色的，White！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "White.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is black! Black!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Black……黑色……Black！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Black.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is pink! Pink!",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "Pink！我最喜欢粉红色！我的帽子就是Pink！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Pink.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is orange! Orange!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Orange！就是橙子的颜色！还有橙汁也是Orange！我最喜欢喝橙汁了！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Orange.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "学完颜色，老师让大家自由活动。猫猫马上跑到积木箱子旁边，可可和咩咩跟在后面。三个人开始搭停车场，搭得正起劲，突然旁边传来一个声音——"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "这个……是什么。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫抬起头，看到一只小熊，圆圆的脸，胖乎乎的身体，穿着一件蓝色的条纹衣服，眼睛圆溜溜的，正蹲在旁边看他们搭积木。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "这是停车场。你叫什么名字？来一起搭吧。"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "我叫豆豆。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "四个人一起搭，停车场越来越大。老师走过来，看到了，弯下腰，仔细看了看——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Wow! What is this?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "This is a car park! Car park!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Very good, Maomao! You're so creative!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Thank you!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来。猫猫拉着妈妈的手，眼睛亮亮的。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！今天学了颜色！Red是红色，Blue是蓝色，White是白色，就是雪的颜色！江雪的雪！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "千山鸟飞绝，万径人踪灭，孤舟蓑笠翁，独钓寒江雪——雪就是White！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "今天，猫猫发现了三件有趣的事：颜色的英文，新朋友豆豆，还有——原来唐诗里面，藏着很多颜色。"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "数数大比拼",
+    "phase": "探索好奇期",
+    "phaseClass": "phase2",
+    "emoji": "🔢",
+    "emotion": "💪 第一次感觉我很厉害",
+    "color": "#5A8FA8",
+    "review": [
+      {
+        "zh": "一",
+        "en": "One."
+      },
+      {
+        "zh": "二",
+        "en": "Two."
+      },
+      {
+        "zh": "三",
+        "en": "Three."
+      },
+      {
+        "zh": "四",
+        "en": "Four."
+      },
+      {
+        "zh": "五",
+        "en": "Five."
+      },
+      {
+        "zh": "六",
+        "en": "Six."
+      },
+      {
+        "zh": "七",
+        "en": "Seven."
+      },
+      {
+        "zh": "八",
+        "en": "Eight."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第八天早上，猫猫的书包今天特别重——因为里面装了五辆小汽车。妈妈帮他提了一路，到门口的时候说——"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，你的书包比你重。今天带这么多汽车去干嘛？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "秘密！会当凌绝顶，一览众山小！妈妈再见！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走进教室，豆豆已经在了，从书包里拿出一袋积木——"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "带来了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "太好了！今天我们搭两层的！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午的课，老师带来了一袋苹果，把苹果一个一个摆在桌子上，笑着说——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Today we are going to count! Count!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Count！数数！数！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "One! Two! Three! Four! Five! Six! Seven! Eight!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "One. Two. Three. Four. Five. Six. Seven. Eight.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "How many apples?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Eight! Eight apples!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Excellent, Maomao! Eight apples!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师又把苹果换成了积木——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Now, let's count the blocks! How many blocks?",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "这一次，猫猫和豆豆同时举手——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Twelve!!",
+        "en": true
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "Twelve!!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "两个人同时说了同一个数字，然后互相看了一眼，一起笑了。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Both correct! Twelve blocks! Maomao and Doudou, excellent!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午自由活动，四个人开始搭停车场。猫猫一边搭，一边小声数——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "One, two, three, four, five, six, seven, eight…八个格子，可以停八辆车！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师又出了一道数数题——数教室里的小朋友。猫猫很快数完了——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Fourteen! Fourteen friends!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Correct! You are very good at counting, Maomao!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "因为我数停车场的格子数多了，就会数数了。"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "数积木，数数就快了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来。猫猫拉着妈妈往外走，一边走一边说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！今天学了count！就是数数！老师说我数数很厉害！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "床前明月光，疑是地上霜，举头望明月，低头思故乡——我来幼儿园的时候，也是这种感觉——刚开始觉得很陌生，后来就好了。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫……你说得真好。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫数了数——可可，咩咩，豆豆，还有今天借车给他停的那个小朋友。Four，四个。他在幼儿园，已经有四个朋友了。"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "做操的时候，猫猫背了一首诗",
+    "phase": "探索好奇期",
+    "phaseClass": "phase2",
+    "emoji": "🏃",
+    "emotion": "🌟 融入集体 → 教朋友背江雪",
+    "color": "#5A8FA8",
+    "review": [
+      {
+        "zh": "运动做操",
+        "en": "Exercise."
+      },
+      {
+        "zh": "举起手",
+        "en": "Hands up!"
+      },
+      {
+        "zh": "放下手",
+        "en": "Hands down!"
+      },
+      {
+        "zh": "跳",
+        "en": "Jump!"
+      },
+      {
+        "zh": "转圈",
+        "en": "Turn around!"
+      },
+      {
+        "zh": "拍手",
+        "en": "Clap your hands!"
+      },
+      {
+        "zh": "跺脚",
+        "en": "Stamp your feet!"
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第九天早上，猫猫走到幼儿园门口，这一次，妈妈还没有蹲下来，猫猫就自己松开了妈妈的手——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，你去吧，我自己进去。两个黄鹂鸣翠柳，一行白鹭上青天……"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫长大了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午，老师宣布今天有一个特别的活动——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Today we are going to exercise! Exercise!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Exercise！做操！走呀！我最喜欢做操了！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Let's go outside! Outside!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师带着大家走出教室，来到幼儿园的小操场。操场上有绿色的草地，有一棵大大的树，树上有几只小鸟在叫。风吹过来，凉凉的，很舒服。猫猫站在操场上，抬起头，看着蓝色的天空，白色的云——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "两个黄鹂鸣翠柳，一行白鹭上青天……就是现在这样。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Follow me! Hands up!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Hands up!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Hands down!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Hands down!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Jump!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Jump!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Turn around!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Turn around!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Clap your hands!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Clap your hands!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Stamp your feet!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Stamp your feet!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "做完操，老师让大家在操场上休息一会儿。猫猫、可可、咩咩、豆豆四个人坐在大树下面。风吹过来，树叶沙沙响。谁都没有说话，就这样坐着。过了一会儿，猫猫抬起头，看着树叶在风里动，突然开口——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "千山鸟飞绝，万径人踪灭，孤舟蓑笠翁，独钓寒江雪。"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "猫猫，这首诗说的是什么？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "说的是，所有的山上，一只鸟都没有了，所有的路上，一个人也没有了，只有一只小船上，有一个穿着蓑衣的老爷爷，在大雪里，一个人钓鱼。"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "那个老爷爷，不孤单吗？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我觉得他不孤单，因为他有鱼竿，有小船，有大雪陪着他。就像猫猫来幼儿园，刚开始觉得孤单，后来有了我们。"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "我刚来的时候，不知道跟谁玩。后来看到停车场。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "你们要不要学这首诗？"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "要！！我要学！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "千山——跟我说。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "千山——"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "千山——"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "千山——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "鸟飞绝——"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "鸟飞绝——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "万径人踪灭——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "孤舟蓑笠翁——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "独钓寒江雪——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "好，全部，一起！"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "千山鸟飞绝，万径人踪灭，孤舟蓑笠翁，独钓寒江雪！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "四个小朋友的声音，在操场上飘起来，混进树叶的沙沙声里。放学了，妈妈走进来。猫猫骄傲地说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！我今天教可可他们背江雪了！他们都会背了！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "太棒了！你们都背会了！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我教的！妈妈，你教给我，我教给可可咩咩豆豆，他们也会了，这样，大家都有这首诗了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫心里有一种很满的感觉。这首诗，是妈妈教他的。现在，变成了他们四个人的诗。"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "下雨天，猫猫有点想妈妈",
+    "phase": "关系建立期",
+    "phaseClass": "phase3",
+    "emoji": "🌧️",
+    "emotion": "😢 想妈妈 → 朋友让我开心",
+    "color": "#7A5AA8",
+    "review": [
+      {
+        "zh": "开心",
+        "en": "Happy."
+      },
+      {
+        "zh": "伤心",
+        "en": "Sad."
+      },
+      {
+        "zh": "害怕",
+        "en": "Scared."
+      },
+      {
+        "zh": "生气",
+        "en": "Angry."
+      },
+      {
+        "zh": "累了",
+        "en": "Tired."
+      },
+      {
+        "zh": "兴奋",
+        "en": "Excited."
+      },
+      {
+        "zh": "你感觉怎么样",
+        "en": "How do you feel?"
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十天早上，猫猫还没睁开眼睛，就听到窗外哗哗哗。下雨了。猫猫躺在床上，听着雨声，心里莫名其妙地，有点不高兴——下雨天，总觉得软软的，有点想赖在妈妈身边。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈……我今天不想去幼儿园。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，你知道吗，下雨天，可可也在幼儿园等你，咩咩也在，豆豆也在。他们也是下雨天来的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫想了想，可可的笑脸，咩咩的小酒窝，豆豆认真搭积木的样子——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "……好吧。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走进教室，可可已经在了。一看到猫猫，可可马上跳起来。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！！你来了！！我等你好久了！走走，去玩！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "来了。可可……我今天有点想妈妈。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "我知道，我刚来幼儿园的时候，下雨天最难过了。我也会这样，现在好多了，但是有时候还是会。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "咩咩进来了，走过来坐在猫猫旁边，什么都没有说，只是把自己的小零食袋放在猫猫面前——里面有三颗棒棒糖，红色的，黄色的，绿色的。"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "吃棒棒糖会好一点的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫拿起一颗红色的，剥开糖纸，放进嘴里——甜的。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "咩咩，谢谢你。草莓味的，好吃。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午，老师带大家学习表达感受。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "How do you feel today? Happy?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Or sad?",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Happy开心！Sad难过！还有Excited，就是超级兴奋！就是我现在这样！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Happy. Sad.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Scared!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Scared.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Angry!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Angry.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Tired!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Tired.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Excited!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Excited.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, how do you feel today?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Happy! Because I have good friends!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Wonderful, Maomao!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "雨停了，自由活动时间，四个人去操场玩。可可踩了一个水坑——哗！鞋子湿了。豆豆默默地从书包里拿出一双备用袜子，递给可可。"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "备用袜子。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "豆豆！！！你是世界上最好的豆豆！！！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫站在旁边，看着这一切，突然想起今天早上——下雨天，不想来幼儿园。但是如果他没来，他就不会看到这一幕。猫猫小声说——"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "雨停了，可可踩了一个水坑——哗！鞋子湿了。豆豆默默地拿出备用袜子，递给可可。猫猫站在旁边看着，心里突然想起一句诗，小声说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "独钓寒江雪……"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "那个在大雪里一个人钓鱼的老爷爷——他不孤单，他有雪陪着他。猫猫今天有点想妈妈，但是有可可，有咩咩，有豆豆。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "还好我来了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来。猫猫扑进妈妈怀里。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！今天早上有点sad，但是后来happy了。咩咩给了我棒棒糖，草莓味的，然后我就happy了。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "咩咩真好。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，我告诉老师今天的感受，我说Happy，because I have good friends！老师说Wonderful！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫牵着妈妈走出幼儿园，走过那些小水坑。今天，他有一点点sad，也有一点点happy。但是最后，happy多过了sad。因为有可可，有咩咩，有豆豆。有朋友在的地方，就算下雨天，也会是happy的。"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "猫猫摔倒了",
+    "phase": "关系建立期",
+    "phaseClass": "phase3",
+    "emoji": "🩹",
+    "emotion": "😟 受伤 → 感受到被保护",
+    "color": "#7A5AA8",
+    "review": [
+      {
+        "zh": "你还好吗",
+        "en": "Are you okay?"
+      },
+      {
+        "zh": "我受伤了",
+        "en": "I'm hurt."
+      },
+      {
+        "zh": "我膝盖疼",
+        "en": "My knee hurts."
+      },
+      {
+        "zh": "我头疼",
+        "en": "My head hurts."
+      },
+      {
+        "zh": "我肚子疼",
+        "en": "My tummy hurts."
+      },
+      {
+        "zh": "我需要创可贴",
+        "en": "I need a band-aid."
+      },
+      {
+        "zh": "请帮帮我",
+        "en": "Help me please."
+      },
+      {
+        "zh": "别担心",
+        "en": "Don't worry."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十一天早上，猫猫心情很好——因为妈妈早餐给他煮了方便面。猫猫最爱吃方便面了，汤是咸咸的，面是软软的，上面有一个荷包蛋。猫猫吃了两大碗，摸着圆鼓鼓的肚子，对妈妈说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，锄禾日当午，汗滴禾下土，谁知盘中餐，粒粒皆辛苦——妈妈，你做的方便面最好吃！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，那首诗不是这个意思……"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "反正就是好吃！拜拜妈妈！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午自由活动时间，猫猫决定跑一圈。他深吸一口气，然后——跑！风从耳边过，猫猫跑得很快，感觉脚都快飞起来了——然后，脚踩到了一块还没干透的地方——滑！猫猫摔倒了。膝盖破了，有一点点血，很疼。猫猫坐在地上，眼睛红了。他低着头，小声地，自言自语——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "独钓寒江雪……"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "就在这时，旁边传来轻轻的脚步声。猫猫抬起头——咩咩不知道什么时候走过来了，没有说话，就坐在猫猫旁边，陪着他。两个人就这样坐着。过了一会儿——"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "疼吗。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "有点疼。"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "去找老师。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "咩咩扶着猫猫站起来，两个人慢慢走回教室。兔子老师看到猫猫的膝盖，马上蹲下来——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Oh no, Maomao! Are you okay?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I'm hurt. My knee hurts.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Don't worry. I'll help you.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师拿出急救箱，轻轻帮猫猫清理伤口。有一点点刺——猫猫咬住嘴唇，没有哭出来。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Very brave, Maomao. Very brave.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师贴上创可贴——粉红色的，上面有小星星图案。猫猫说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Thank you. A little bit hurt, but I'm okay.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Good boy, Maomao. If it hurts, tell me, okay?",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "处理完伤口，猫猫坐在椅子上。豆豆走过来，没有说话，从书包里拿出一辆小汽车——是一辆蓝色的小警车，是豆豆最喜欢的那辆。豆豆把小警车放在猫猫面前——"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "借你玩。你膝盖疼，玩一下会好一点。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫拿起那辆蓝色的小警车，放在桌上，慢慢地推了推。咕噜咕噜——小警车在桌上跑起来。猫猫看着小警车，心里那种疼，好像慢慢地，散了一点。放学了，妈妈走进来，一眼就看到了猫猫膝盖上的创可贴——"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫！怎么了！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "摔倒了，膝盖破了一点，老师帮我贴了band-aid。咩咩陪着我，豆豆把他最喜欢的小警车借给我玩。妈妈，老师说我very brave。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，受伤了不可怕，说出来就有人来帮你了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈牵着猫猫走出幼儿园。猫猫一只手牵着妈妈，另一只手，握着豆豆借给他的蓝色小警车。今天，他受伤了，但是——咩咩坐在他旁边，豆豆把最喜欢的小警车借给他，老师说他very brave。受伤，也让你知道，谁会在你旁边。"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "title": "猫猫举手了",
+    "phase": "关系建立期",
+    "phaseClass": "phase3",
+    "emoji": "✋",
+    "emotion": "⭐ 第一次被认可 → 黑板上有我的名字",
+    "color": "#7A5AA8",
+    "review": [
+      {
+        "zh": "问答游戏",
+        "en": "Quiz."
+      },
+      {
+        "zh": "举手",
+        "en": "Raise your hand."
+      },
+      {
+        "zh": "请安静",
+        "en": "Be quiet please."
+      },
+      {
+        "zh": "坐下",
+        "en": "Sit down."
+      },
+      {
+        "zh": "站起来",
+        "en": "Stand up."
+      },
+      {
+        "zh": "看这里",
+        "en": "Look here."
+      },
+      {
+        "zh": "做得好",
+        "en": "Good job."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十二天早上，妈妈看了看猫猫膝盖上的创可贴——还在，粉红色的，上面有小星星。猫猫说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，春眠不觉晓，处处闻啼鸟，夜来风雨声，花落知多少——昨天下雨，今天花有没有落下来？"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "有一点点叶子落下来了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "那就对了！妈妈再见！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午，老师在黑板上写了一些字，告诉大家今天有一个问答游戏——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Today we have a quiz! I will ask questions, and you raise your hand if you know! Raise your hand!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师开始出题了——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "What colour is the sky?",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫一听，马上知道——Blue！天空是蓝色的！但是他没有马上举手。他以前在家，妈妈问他问题他马上就说，但是现在有那么多小朋友……可可碰了碰猫猫——"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！举手！举！你肯定对的！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫深吸一口气，慢慢地，把手举起来。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Blue! The sky is blue!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Correct! The sky is blue! Well done, Maomao!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫的耳朵，红了一点。他低下头，假装在看桌子——但是嘴角，怎么也压不下去。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "How many fingers do you have?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Ten! I have ten fingers!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Excellent, Maomao!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "What animal says woof woof?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Dog! A dog says woof woof!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Perfect, Maomao!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师在黑板上，用彩色粉笔画了一颗星星，写上了猫猫的名字。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, you are the star today! Star!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午的课，老师教课堂用语——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Be quiet please!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Be quiet please.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Sit down! Stand up! Look here! Good job!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Sit down. Stand up. Look here. Good job.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "午饭有鸡肉！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "鸡肉！！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫夹起一大块鸡肉，放进嘴里，闭上眼睛——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "It's delicious……",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来。猫猫站起来，往门口走，然后想起什么，回头看了一眼黑板——那颗星星还在，猫猫的名字还在。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，你看！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫……这是？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我今天答对了三道题，老师说我是Star，就画了这颗星星！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，妈妈看到了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Blue就是蓝色，就是春水碧于天！Blue就是碧！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "今天，猫猫举手了，答对了，黑板上有他的名字。他发现了一件事——举手，不可怕。说错了，也没关系。但是说对了，那种感觉——像黑板上的星星，亮亮的，暖暖的。"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "title": "四个人的秘密基地",
+    "phase": "关系建立期",
+    "phaseClass": "phase3",
+    "emoji": "🏠",
+    "emotion": "💝 连接感 → 幼儿园有我的地方",
+    "color": "#7A5AA8",
+    "review": [
+      {
+        "zh": "我可以一起玩吗",
+        "en": "Can I play?"
+      },
+      {
+        "zh": "我们一起玩吧",
+        "en": "Let's play together!"
+      },
+      {
+        "zh": "我们做朋友吧",
+        "en": "Let's be friends!"
+      },
+      {
+        "zh": "你是我的朋友",
+        "en": "You're my friend."
+      },
+      {
+        "zh": "我喜欢你",
+        "en": "I like you."
+      },
+      {
+        "zh": "警车",
+        "en": "Police car."
+      },
+      {
+        "zh": "救护车",
+        "en": "Ambulance."
+      },
+      {
+        "zh": "消防车",
+        "en": "Fire truck."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十三天早上，猫猫的书包今天特别重——因为里面装了七辆小汽车，还有三本关于汽车的小画书。妈妈说——"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，你的书包比你重。今天带这么多汽车去干嘛？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "秘密！会当凌绝顶，一览众山小！妈妈再见！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午的课，老师教大家交朋友的用语——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Today, let's learn how to make friends! Can I play?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Can I play?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Let's play together!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Let's play together!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Let's be friends!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Let's be friends!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "You're my friend! I like you!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "You're my friend. I like you.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师让大家练习，猫猫转向豆豆——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Can I play?",
+        "en": true
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "Let's play together.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Let's be friends!",
+        "en": true
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "You're my friend.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I like you，豆豆！"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "I like you too.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午自由活动时间，五个人悄悄走到教室最角落的地方。猫猫指挥大家搭秘密基地——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "豆豆，你来搭这面墙，可可，把积木箱推过来，咩咩，你帮我们把汽车画书放好。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫把七辆小汽车一辆一辆拿出来——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "红色的叫red truck，就是红色大卡车。蓝色的叫police car，就是警车。白色的是ambulance，就是救护车。橙色的是excavator，就是挖土机！"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！你怎么知道这么多！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我有书，上面都有英文，妈妈教我读的！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "四个人搭好了秘密基地，积木墙围成一个小小的空间，里面有停车场，七辆小汽车整齐地停在格子里，还有三本汽车画书放在角落。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "这就是我们的秘密基地！！太棒了！！"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "好舒服！"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "警车放这里。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "四个人挤在那个小小的空间里，可可翻开一本汽车画书，指着一辆红色的消防车——"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫这个叫什么！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Fire truck，就是消防车，着火了就开来救火的！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Fire truck. Ambulance. Police car.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来，看到猫猫正在教一只小狐狸认汽车。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，你在教谁？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！我今天认识了叮叮！小狐狸叮叮！今天第一天来，她哭了，我就去跟她说话，教她说My name is Dingding，然后教她认汽车！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，你已经可以教别人了！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫牵着妈妈走出幼儿园，想起第一天那个紧紧拉着妈妈的手、不知道该怎么办的自己。现在，换他拉叮叮了。"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "title": "叮叮来了",
+    "phase": "社交突破期",
+    "phaseClass": "phase4",
+    "emoji": "🦊",
+    "emotion": "💪 自信 → 我也可以帮助别人",
+    "color": "#4A7A5A",
+    "review": [
+      {
+        "zh": "请帮帮我",
+        "en": "Help me please."
+      },
+      {
+        "zh": "我不明白",
+        "en": "I don't understand."
+      },
+      {
+        "zh": "可以再说一遍吗",
+        "en": "Can you repeat that?"
+      },
+      {
+        "zh": "等等我",
+        "en": "Wait for me."
+      },
+      {
+        "zh": "我能做到",
+        "en": "I can do it."
+      },
+      {
+        "zh": "欢迎你",
+        "en": "Welcome."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十四天早上，猫猫背着书包，走到幼儿园门口。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "野火烧不尽，春风吹又生——就是不管多难，明天还会好的。妈妈再见！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走进教室，门又开了，进来一只小狐狸——橘红色的毛，尾巴蓬蓬的，耳朵尖尖的。她站在门口，一只手拉着大人，另一只手捂着嘴，在哭。不是大声哭，是那种忍着的哭，肩膀一抖一抖的。猫猫看着那只小狐狸，站住了。他想起了自己——第一天站在幼儿园门口，紧紧拉着妈妈的手。他走到小狐狸旁边，站了一会儿。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "你好，我叫猫猫，我是小花猫。"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "我……我叫叮叮。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "叮叮，你是第一天来吗？我第一天来的时候，也哭了。我还一直拉着妈妈的手，不肯松开。"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "真的吗……我也是……"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "但是后来，我认识了可可，他教了我很多英语。还有咩咩，她给了我棒棒糖。还有豆豆，他搭积木很厉害。然后就没那么害怕了。"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "英语……我一点都不会……怎么办……"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "没关系，我第一天也不会。我来教你。老师说Hello，你就说Hello，老师说Good morning，你就说Good morning。跟着说就行了。"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "Hello… Good morning…",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "What's your name?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "就说My name is Dingding，就是你名字叫叮叮的意思。"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "My name is Dingding.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Hello, Dingding! Nice to meet you! Welcome!",
+        "en": true
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "Nice to meet you…",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午，老师教大家请求帮助的用语——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Help me please!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Help me please.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "I don't understand!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I don't understand.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Can you repeat that?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Can you repeat that?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Wait for me!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Wait for me!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "I can do it!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I can do it!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "叮叮，跟着说——I can do it！"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "I can do it!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来。猫猫正在教叮叮认汽车——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "叮叮，这个叫什么？"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "Red……truck?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "对！Red truck！叮叮你真聪明！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "有猫猫在，你会越来越喜欢幼儿园的。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，我记得你当时把我送进来，我开始也不想来，但是来了之后，有可可，有咩咩，有豆豆，有叮叮……还好我来了。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫……你长大了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，我会拉着叮叮的手了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈没有说话，只是紧紧握了握猫猫的手。"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "title": "动物园参观日",
+    "phase": "社交突破期",
+    "phaseClass": "phase4",
+    "emoji": "🦁",
+    "emotion": "🤩 自信爆棚 → 还好我来了",
+    "color": "#4A7A5A",
+    "review": [
+      {
+        "zh": "动物园",
+        "en": "Zoo."
+      },
+      {
+        "zh": "上车",
+        "en": "Get on."
+      },
+      {
+        "zh": "下车",
+        "en": "Get off."
+      },
+      {
+        "zh": "大象",
+        "en": "Elephant."
+      },
+      {
+        "zh": "老虎",
+        "en": "Tiger."
+      },
+      {
+        "zh": "猴子",
+        "en": "Monkey."
+      },
+      {
+        "zh": "坐小火车",
+        "en": "Take the tram."
+      },
+      {
+        "zh": "司机",
+        "en": "Driver."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十五天早上，猫猫一睁开眼睛，就从床上跳起来——因为昨天，老师宣布了一件事：今天，全班要去动物园！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈快点！今天去动物园！两个黄鹂鸣翠柳，一行白鹭上青天！动物园里有没有白鹭妈妈？"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "可能有鸟，但是不一定是白鹭。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师带着大家排好队，一辆大巴车停在幼儿园门口——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Bus！！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Let's get on the bus! Get on!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Get on the bus!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "大巴车发动了——轰隆隆——风从耳边过，猫猫兴奋地对可可说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "可可！开车的人叫driver！Driver！d-r-i-v-e-r，driver！"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Driver！司机！我长大要当司机！！"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Everyone, we are here! We are at the zoo! Zoo!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Let's get off the bus! Get off!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Get on是上车，get off是下车——on是上，off是下！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走进动物园，第一个展区——大象区。一只巨大的灰色大象，慢慢地走着，耳朵像两把大扇子，鼻子长长的。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is an elephant! Elephant!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Elephant！就是大象！Elephants are very big！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Elephant.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第二个展区——老虎区。一只橙色的老虎，懒洋洋地趴在大石头上。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a tiger! Tiger!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Tiger.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第三个展区——猴子区。猴子们在树上跳来跳去。一只猴子突然跳到了玻璃旁边，跟叮叮面对面——"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "啊！！它在看我！！它觉得我是猴子吗！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "没事没事，有玻璃的，它出不来。它可能在说——Are you okay？"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "I'm okay, monkey!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "This is a monkey! Monkey!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Monkey.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "参观了好几个展区，猫猫突然看到了——一辆绿色的小火车，慢慢地从远处开过来，车头上有一个笑脸，咔哒咔哒地响着。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Tram。就是那个tram！！园区小火车！！"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "Tram。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Shall we take the tram? Take the tram!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Take the tram!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "小火车开起来了！咔哒，咔哒，咔哒——风从耳边吹过，两边的树飞快地往后退。猫猫闭上眼睛，感受风。就在这一刻，他突然想起来——第一天来幼儿园，他害怕，他不想来，他拉着妈妈的手，不肯松开。但是如果他一直不来，他就不会认识可可，不会认识咩咩，不会认识豆豆，不会遇见叮叮，也不会坐上这辆小火车，感受这阵风。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "还好我来了。"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "还好来了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈接猫猫，猫猫说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，谢谢你当时把我送进来。如果你没有送我进来，我就不会认识可可，不会认识咩咩，豆豆，叮叮，就没有秘密基地，没有tram……"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，两个黄鹂鸣翠柳，一行白鹭上青天——今天我在动物园，真的看到鸟了！是孔雀！老师说孔雀的英文叫peacock！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈蹲下来，抱住猫猫，走出幼儿园。夕阳很红，把两个人的影子照得长长的。"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "title": "今天，猫猫走在前面",
+    "phase": "社交突破期",
+    "phaseClass": "phase4",
+    "emoji": "👟",
+    "emotion": "😊 主动 → 我带妈妈来幼儿园",
+    "color": "#4A7A5A",
+    "review": [
+      {
+        "zh": "起床",
+        "en": "Wake up."
+      },
+      {
+        "zh": "洗脸",
+        "en": "Wash your face."
+      },
+      {
+        "zh": "刷牙",
+        "en": "Brush your teeth."
+      },
+      {
+        "zh": "穿衣服",
+        "en": "Get dressed."
+      },
+      {
+        "zh": "收拾书包",
+        "en": "Pack your bag."
+      },
+      {
+        "zh": "该出发了",
+        "en": "It's time to go."
+      },
+      {
+        "zh": "我们走吧",
+        "en": "Let's go."
+      },
+      {
+        "zh": "拜拜",
+        "en": "Bye bye."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十六天早上，闹钟还没响，猫猫自己醒了。他从床上爬起来，去找妈妈——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，今天幼儿园有没有椰子水？"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，我怎么知道……"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "没关系，就算没有椰子水，也有可可和咩咩和豆豆和叮叮。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "吃完早饭，猫猫自己走进房间，把书本和水壶放进书包，拉上拉链，背上书包，走出来——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，我好了，我们走吧。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，你自己收拾好了？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "对啊，书，水壶，还有今天要带的汽车，都装好了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "出了门，走在路上——今天，猫猫走在前面，妈妈跟在后面。走到幼儿园门口，猫猫回头——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，你回去吧，我自己进去。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "好，猫猫。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午，老师教大家日常活动的英语——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Wake up! Wash your face! Brush your teeth!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Wake up. Wash your face. Brush your teeth.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Get dressed! Pack your bag! It's time to go! Let's go! Bye bye!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Get dressed. Pack your bag. It's time to go. Let's go. Bye bye.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, you packed your own bag today?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Yes! I packed my own bag! By myself!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Excellent, Maomao! Very independent!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, I can see that you are growing up every single day.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Because I like it here now.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午，自由活动时间，五个人在秘密基地里。猫猫从书包里拿出今天带来的汽车——一辆白色的大油罐车。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "这个叫tanker truck，就是运油的大车，运去gas station给汽车加油的！"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "就像，先有妈妈，才有我们，我们才能来幼儿园？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "叮叮，你这个比喻……很厉害。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来，站在门口，看着猫猫和豆豆两个人蹲在秘密基地旁边，认认真真讨论停车的问题。过了一会儿，猫猫抬起头，看到妈妈——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈！今天有椰子水！！Coconut water！Coconut就是椰子，coconut water就是椰子水，甜甜的，比橙汁还好喝！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Wake up！Wash your face！Brush your teeth！Get dressed！Pack your bag！It's time to go！Let's go！Bye bye！全部都会！"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，今天你走在妈妈前面，妈妈看着你的背影，觉得猫猫长大了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，以后我每天走在前面，你跟着我，我带你来幼儿园！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "从第1集的妈妈带我来，到第16集的我带妈妈来——角色完全翻转了。"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "title": "猫猫和豆豆吵架了",
+    "phase": "独立稳定期",
+    "phaseClass": "phase5",
+    "emoji": "🤝",
+    "emotion": "🌱 稳定 → 第一次自己解决冲突",
+    "color": "#C06080",
+    "review": [
+      {
+        "zh": "对不起",
+        "en": "Sorry."
+      },
+      {
+        "zh": "没关系",
+        "en": "That's okay."
+      },
+      {
+        "zh": "这是我的错",
+        "en": "It's my fault."
+      },
+      {
+        "zh": "我不是故意的",
+        "en": "I didn't mean it."
+      },
+      {
+        "zh": "打扰一下",
+        "en": "Excuse me."
+      },
+      {
+        "zh": "谢谢",
+        "en": "Thank you."
+      },
+      {
+        "zh": "不客气",
+        "en": "You're welcome."
+      },
+      {
+        "zh": "和好",
+        "en": "Make up."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十七天早上，猫猫背着书包，走在前面，妈妈跟在后面。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，春风得意马蹄疾，一日看尽长安花！今天要搭gas station！妈妈再见！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午的课很顺利，下午自由活动，五个人跑到秘密基地，开始搭tanker truck的停车格——猫猫说要用蓝色积木，豆豆说要用黄色积木。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "用蓝色的，蓝色好看。"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "黄色也可以。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我说用蓝色！"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "为什么要听你的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "教室里安静了一下。可可、咩咩、叮叮三个人都停下来，看着猫猫和豆豆。两个人互相看着，谁都没有说话。猫猫拿起蓝色积木，豆豆拿起黄色积木，两个人各自坐到一边，不说话了。老师教礼貌和道歉的英语——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Sorry!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "That's okay!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "It's my fault.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "I didn't mean it.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Sometimes it's not about who is right, it's about being kind to your friend. Be kind!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫心里被什么东西碰了一下。他想了很久，然后站起来，走到豆豆旁边，站了一会儿。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "豆豆……Sorry. 刚才是我不对，我说话太大声了。It's my fault."
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "That's okay."
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "其实……黄色也可以的。你的积木也很好。"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "蓝色也好看。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "要不，蓝色和黄色都用，一格蓝色，一格黄色，这样更好看！"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "可以。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "两个人回到秘密基地，一起蹲下来——一块蓝色，一块黄色，交替着搭上去。停车格搭好了，蓝黄相间，猫猫把tanker truck小心地推进去——刚刚好。"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "刚好。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "刚好。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "停车格搭好了，蓝黄相间，猫猫把tanker truck小心地推进去——刚好。两个人同时低头看着那个停车格，谁都没有说话。过了一会儿，豆豆轻轻开口——"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "蓝色和黄色……都好看。像天空和太阳。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫愣了一下。可可、咩咩、叮叮也都愣了一下，然后一起笑了——豆豆用最少的话，说出了今天最暖的一句话。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来。猫猫说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，今天我和豆豆吵架了，但是我想了想，是我不对，我去跟他说了Sorry，It's my fault. 他说That's okay，后来我们把蓝色和黄色都用上了，反而更好看。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，你自己去道歉的？没有找老师帮忙？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "老师教了Sorry，我就自己去说了。妈妈，我发现一件事——说Sorry，没有那么难的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈抱住猫猫，小声说：\"妈妈真的很骄傲你。\"今天，猫猫和豆豆吵架了，但是他自己想了想，自己走过去，说了Sorry。蓝色加黄色，比单独的蓝色，更好看。"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "title": "猫猫介绍他的家人",
+    "phase": "独立稳定期",
+    "phaseClass": "phase5",
+    "emoji": "👨‍👩‍👦",
+    "emotion": "🏠 把家和幼儿园连在一起",
+    "color": "#C06080",
+    "review": [
+      {
+        "zh": "妈妈",
+        "en": "Mum."
+      },
+      {
+        "zh": "爸爸",
+        "en": "Dad."
+      },
+      {
+        "zh": "哥哥",
+        "en": "Brother."
+      },
+      {
+        "zh": "姐姐",
+        "en": "Sister."
+      },
+      {
+        "zh": "奶奶",
+        "en": "Grandma."
+      },
+      {
+        "zh": "爷爷",
+        "en": "Grandpa."
+      },
+      {
+        "zh": "姑姑",
+        "en": "Auntie."
+      },
+      {
+        "zh": "老师",
+        "en": "Teacher."
+      },
+      {
+        "zh": "朋友",
+        "en": "Friend."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十八天早上，猫猫走到幼儿园门口，停下来，转身跑回到妈妈面前——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈我爱你。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "妈妈也爱你，猫猫。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走进教室，豆豆一看到猫猫，从书包里拿出一颗棒棒糖，橙色的——"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "给你。谢谢你说Sorry。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "豆豆……谢谢你。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午，老师带大家画家人，然后介绍自己的家人——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Today, let's talk about our families! Draw your family!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫画了妈妈、哥哥、姑姑，还有自己——还在桌上画了一碗方便面。可可凑过来看——"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！你为什么画方便面！！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "因为妈妈给我煮方便面，所以方便面也是家的一部分。方便面，就是家的味道。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "轮到猫猫上去介绍了——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "This is my family. This is my mum. She has long hair. She teaches me Tang poetry every day. She makes the best noodles in the world.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "This is my brother. He is tall. This is my auntie. She wears glasses. She is very kind.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "This is me. I am Maomao. I like cars, noodles, lollipops, and Tang poetry.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "And this is noodles. Because noodles taste like home.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, noodles taste like home — that is the most beautiful thing I have heard today.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午，老师教家人的英语——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Mum! Dad! Brother! Sister!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Mum. Dad. Brother. Sister.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Grandma! Grandpa! Auntie! Teacher! Friend!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Grandma. Grandpa. Auntie. Teacher. Friend.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Friends are family too, sometimes.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，猫猫把画递给妈妈——妈妈低头看，看到了自己，看到了哥哥，看到了姑姑，看到了猫猫，还有——一碗方便面。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，我告诉老师，noodles taste like home，方便面是家的味道，老师说这是今天最美的一句话。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，慈母手中线，游子身上衣，临行密密缝，意恐迟迟归——我今天背这首诗，想的就是你。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫……妈妈也想你。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，你每天都来接我，所以我不用等你回来，因为你一直在。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈紧紧抱着猫猫，在教室门口，站了很久。今天，猫猫把幼儿园和家，连在了一起。"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "title": "午睡的时候，猫猫哄自己睡着了",
+    "phase": "身份建立期",
+    "phaseClass": "phase6",
+    "emoji": "😴",
+    "emotion": "🌙 第一次自己安慰自己",
+    "color": "#C8963A",
+    "review": [
+      {
+        "zh": "午睡时间",
+        "en": "Nap time."
+      },
+      {
+        "zh": "做个好梦",
+        "en": "Sweet dreams."
+      },
+      {
+        "zh": "我想妈妈了",
+        "en": "I miss my mum."
+      },
+      {
+        "zh": "妈妈会回来的",
+        "en": "Mum will come back."
+      },
+      {
+        "zh": "妈妈一直会来",
+        "en": "Mum will always come."
+      },
+      {
+        "zh": "我想要抱抱",
+        "en": "I want a hug."
+      },
+      {
+        "zh": "一直，永远",
+        "en": "Always."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第十九天早上，猫猫走到幼儿园门口，妈妈说——今天幼儿园有午睡，要带枕头。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我带了，小老虎枕头。妈妈，床前明月光，疑是地上霜，举头望明月，低头思故乡——午睡的时候可以想这首。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走进教室，每个小朋友的位置旁边都放了一张小床垫。豆豆拿出了他的小警车——"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "警车陪我睡，睡得好。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "午饭有鸡肉！豆豆默默地把自己盘子里的一块鸡肉，夹到猫猫盘子里——"
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "我不太饿。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "午睡时间到了，老师把窗帘拉上，教室里变暗了——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "It's nap time! Let's close our eyes and have a rest. Sweet dreams!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "教室里安静了。可可睡着了，咩咩睡着了，豆豆睡着了，叮叮睡着了。但是猫猫，睡不着。他闭着眼睛，抱着小老虎枕头，心里有一点点空空的——忽然想妈妈了。没有什么特别的原因，就是安静下来，就想了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈现在在做什么呢……妈妈一定会来的。从第一天到现在，妈妈每次都来了，从来没有迟到过。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "但是心里还是有一点点空，猫猫想了想，开始在心里，小声背诗——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "千山鸟飞绝……独钓寒江雪……"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "背到\"寒江雪\"三个字的时候，猫猫的呼吸慢下来了。没有念完，就睡着了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "午睡结束，老师轻轻拉开窗帘——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Good afternoon, everyone. Time to wake up!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫，你睡了吗？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "睡着了。我背了一首诗，然后就睡着了。江雪，背了就睡着了。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Did you sleep well, Maomao?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Yes, I slept well. I wasn't scared. Because I know, Mum will always come.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Yes, Mum will always come. Always.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午，老师教了更多句子——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "I miss my mum.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I miss my mum.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Mum will come back. Mum will always come back.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Mum will always come back! Mum will ALWAYS come back!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "I want a hug.",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I want a hug.",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "I want a hug！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学了，妈妈走进来。猫猫走过去，抱住了妈妈——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，今天午睡，我想你了。但是我没有哭，我在心里背了江雪，然后就睡着了。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "江雪帮你睡着了？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，Mum will always come. Always就是一直，永远。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈把猫猫紧紧抱住，什么都没有说，只是抱着，站在教室门口，站了很久很久。"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "title": "妈妈，等一下",
+    "phase": "身份建立期",
+    "phaseClass": "phase6",
+    "emoji": "🏆",
+    "emotion": "🌟 身份建立 → 幼儿园有我的东西了",
+    "color": "#C8963A",
+    "review": [
+      {
+        "zh": "我会跑",
+        "en": "I can run."
+      },
+      {
+        "zh": "我会跳",
+        "en": "I can jump."
+      },
+      {
+        "zh": "我会交朋友",
+        "en": "I can make friends."
+      },
+      {
+        "zh": "我很勇敢",
+        "en": "I can be brave."
+      },
+      {
+        "zh": "我爱幼儿园",
+        "en": "I love school."
+      },
+      {
+        "zh": "我是超级宝贝",
+        "en": "I am a superstar."
+      }
+    ],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "第二十天早上，猫猫背着书包，走在前面，妈妈跟在后面。走在路上，阳光很好，风很轻。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "碧玉妆成一树高，万条垂下绿丝绦，不知细叶谁裁出，二月春风似剪刀——妈妈，今天是第二十天了。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "对，猫猫来幼儿园，今天第二十天了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "第一天的时候，我以为幼儿园，是一个很可怕的地方。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "现在呢？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "现在觉得，是一个很好的地方。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走到幼儿园门口，可可、咩咩、豆豆、叮叮全部都已经到了，站在门口等猫猫。可可举起手——"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "猫猫！！我带了新汽车！大红色！Fire truck！！来看！！走走！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，你回去吧，我进去了。谢谢你当时把我送进来。如果你没有送我进来，我就不会认识可可，不会认识咩咩，豆豆，叮叮，就没有秘密基地，没有停车场，没有tram……"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，妈妈也谢谢你，谢谢你那天，松开了妈妈的手，走进去了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，以后每天，我都会走进去的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "上午，老师带大家做了一个特别的活动——每个人轮流站起来，说一句：我会做什么。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "I can sing! I can dance! I can jump!",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "I can jump!!",
+        "en": true
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "I can sing.",
+        "en": true
+      },
+      {
+        "role": "doudou",
+        "icon": "🐻",
+        "text": "I can build. Car park.",
+        "en": true
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "I can make friends.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "轮到猫猫了，他站起来，想了很久——他能做什么？他会背唐诗，他会搭停车场，他会认各种汽车，他会说英语，他会教别人……但是今天，他想说一件最重要的事。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I can be brave.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, why can you be brave?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Because I was scared before, but I came in anyway. And now, I like it here.",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, you are the star today.",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "下午，老师教了最后一组句子——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "I can run! I can jump! I love school!",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I can run! I can jump! I love school!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "I am a superstar!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫第一个冲出来，可可紧跟着，然后咩咩、豆豆、叮叮——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "I AM A SUPERSTAR!!!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "放学前，自由活动时间，五个人坐在秘密基地里，各自嘴里含着一颗棒棒糖——猫猫今天带来的，每人一颗。叮叮坐在旁边，轻轻说——"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "猫猫，谢谢你第一天走过来找我。你来找我的时候，我还以为你是来说我哭得太大声了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "叮叮，你要不要学一首诗？江雪，午睡想妈妈了，背了就睡着了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "千山——跟我说。"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "千山——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "鸟飞绝——万径人踪灭——孤舟蓑笠翁——独钓寒江雪——"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "千山鸟飞绝，万径人踪灭，孤舟蓑笠翁，独钓寒江雪！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "门开了——妈妈走进来，看到猫猫正在教叮叮背诗，没有叫猫猫，只是静静地听着。背完了，叮叮高兴地说——"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "我会了！！我会了！！我要回家教我妈妈背！！"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫这才抬起头，看到了门口的妈妈。他对大家说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "我妈妈来了，我要走了。叮叮，江雪你学会了，以后午睡想妈妈了，就在心里背这首，背完了就睡着了。"
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "好！记住了！猫猫，江雪是你发明的吗？"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走到妈妈面前，猫猫拉起妈妈的手，往外走。妈妈轻声说——"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，你刚才在教叮叮背江雪？你把妈妈教你的诗，又教给了别人。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "你教给我，我教给可可咩咩豆豆叮叮，他们也会了，这样，大家午睡都不怕了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，I can be brave. Because I was scared before, but I came in anyway. And now, I like it here.",
+        "en": true
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "猫猫，妈妈真的，非常非常骄傲你。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，今天晚上还是方便面好不好？"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "好，今天晚上，方便面。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫牵着妈妈，走出幼儿园。夕阳很红，把整条路，都照成金色的。猫猫走着走着，停下来——回头，看了幼儿园最后一眼。里面，有灯，有可可，有咩咩，有豆豆，有叮叮，有秘密基地，有停车场，有蓝黄相间的停车格，有江雪……里面，有我的东西了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，里面有我的东西了。第一天的时候，我以为幼儿园是一个很可怕的地方。但是今天我回头看，里面有灯，有朋友，有我的停车场，有我的江雪。不害怕了。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，明天，我走在前面，你跟着我。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫小声背起来——千山鸟飞绝，万径人踪灭，孤舟蓑笠翁，独钓寒江雪。妈妈，那个老爷爷，不孤单的，他有雪陪着他。我也不孤单，我有你，有可可，有咩咩，有豆豆，有叮叮，有幼儿园。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "走到幼儿园门口，猫猫突然停下来，转身，面对着教室的方向，深吸一口气——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Good morning, everyone! I'm here!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "声音很大，大到可可他们在教室里可能都听到了。猫猫转回身，拉起妈妈的手，轻轻说——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "妈妈，第一天我说\"We are here\"，今天我说\"I'm here\"。不一样了。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "妈妈握紧了猫猫的手，两个人就这样走着，走进那一片金色的夕阳里。从第一天到第二十天，从紧紧拉着妈妈的手，到教叮叮背江雪。从\"我害怕\"，到\"I can be brave\"。这是一个小花猫，第一次走进世界，第一次遇见陌生，第一次害怕，然后，第一次发现——原来，害怕，是可以走过去的。"
+      }
+    ]
+  }
+];
+
+// ══ 角色配置 ══
+const ROLES = {
+  narrator:{name:'中文旁白', badge:'旁白', class:'narrator', zhVoice:true},
+  mum:{name:'妈妈', badge:'妈妈', class:'mum', zhVoice:true},
+  koko:{name:'小袋鼠可可', badge:'可可', class:'koko', zhVoice:true},
+  meimei:{name:'小羊咩咩', badge:'咩咩', class:'meimei', zhVoice:true},
+  doudou:{name:'小熊豆豆', badge:'豆豆', class:'doudou', zhVoice:true},
+  dingding:{name:'小狐狸叮叮', badge:'叮叮', class:'dingding', zhVoice:true},
+  teacher:{name:'兔子老师', badge:'老师', class:'teacher', zhVoice:false},
+  evan:{name:'小花猫猫猫', badge:'猫猫', class:'evan', zhVoice:true},
+};
+
+// ══ Azure TTS ══
+const AZURE_KEY='6bvKC0gCcWt3APGtBuisYzITStAs0DCTmWaLld9Azy4iwRhDfP87JQQJ99CFAC3pKaRXJ3w3AAAYACOGI0gY';
+const AZURE_REGION='eastasia';
+
+// ══ 角色声音配置（已验证可用）══
+const VOICES = {
+  narrator: { voice:'zh-CN-XiaoxiaoNeural', rate:'-8%',  pitch:'0%'  },
+  mum:      { voice:'zh-CN-XiaoxiaoNeural', rate:'-5%',  pitch:'0%'  },
+  evan:     { voice:'zh-CN-XiaoxiaoNeural', rate:'-10%', pitch:'0%'  },
+  koko:     { voice:'zh-CN-XiaoxiaoNeural', rate:'+10%', pitch:'0%'  },
+  doudou:   { voice:'zh-CN-XiaoxiaoNeural', rate:'-15%', pitch:'0%'  },
+  meimei:   { voice:'zh-CN-XiaoxiaoNeural', rate:'-10%', pitch:'0%'  },
+  dingding: { voice:'zh-CN-XiaoxiaoNeural', rate:'+8%',  pitch:'0%'  },
+  teacher:  { voice:'en-US-SaraNeural',     rate:'-5%',  pitch:'0%'  },
+};
+
+// 英文句子统一用Ana儿童声音
+const EN_VOICE='en-US-AnaNeural';
+
+let audioCache={};
+// iOS关键：用一个固定的Audio元素，在用户点击时创建并永久保留
+let sharedAudio = null;
+let currentAudio = null;
+
+function getSharedAudio(){
+  if(!sharedAudio){
+    sharedAudio = new Audio();
+    sharedAudio.setAttribute('playsinline','');
+    sharedAudio.setAttribute('webkit-playsinline','');
+    sharedAudio.preload = 'auto';
+  }
+  return sharedAudio;
+}
+
+// ══ 播放状态 ══
+let curLesson=null, segIdx=0, playing=false, busy=false;
+let repeatTarget=1, curLoop=0;
+
+async function azureTTS(text, isEn, role){
+  const cacheKey=(isEn?'en:':'zh:')+text;
+  if(audioCache[cacheKey]) return audioCache[cacheKey];
+  const voice = isEn ? EN_VOICE : (VOICES[role]||VOICES.narrator).voice;
+  const rate  = isEn ? '-5%'    : (VOICES[role]||VOICES.narrator).rate;
+  const lang  = isEn ? 'en-US'  : 'zh-CN';
+  const clean = text.replace(/[<>]/g,' ');
+  const ssml=`<speak version='1.0' xml:lang='${lang}'><voice name='${voice}'><prosody rate='${rate}'>${clean}</prosody></voice></speak>`;
+  const resp=await fetch(`https://${AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`,{
+    method:'POST',
+    headers:{'Ocp-Apim-Subscription-Key':AZURE_KEY,'Content-Type':'application/ssml+xml','X-Microsoft-OutputFormat':'audio-16khz-128kbitrate-mono-mp3'},
+    body:ssml
+  });
+  if(!resp.ok) throw new Error('TTS error '+resp.status);
+  const buf=await resp.arrayBuffer();
+  let url;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(isIOS){
+    // iOS用base64 data URL
+    const bytes=new Uint8Array(buf);
+    let bin=''; for(let i=0;i<bytes.byteLength;i++) bin+=String.fromCharCode(bytes[i]);
+    url='data:audio/mpeg;base64,'+btoa(bin);
+  } else {
+    // Android/其他用blob URL
+    url=URL.createObjectURL(new Blob([buf],{type:'audio/mpeg'}));
+  }
+  audioCache[cacheKey]=url;
+  return url;
+}
+
+function playOneAudio(url, onDone){
+  const a = getSharedAudio();
+  // 停掉之前的
+  try{ a.pause(); }catch(e){}
+  a.onended = null;
+  a.onerror = null;
+  a.ontimeupdate = null;
+  currentAudio = a;
+
+  let called = false;
+  let safeTimer = setTimeout(function(){ done('safe30'); }, 30000);
+
+  function done(reason){
+    if(called) return;
+    called = true;
+    clearTimeout(safeTimer);
+    a.onended = null;
+    a.onerror = null;
+    a.ontimeupdate = null;
+    currentAudio = null;
+    setTimeout(onDone, 50);
+  }
+
+  a.onended = function(){ done('ended'); };
+  a.onerror = function(){ done('error'); };
+  a.ontimeupdate = function(){
+    if(a.duration && isFinite(a.duration) && !called){
+      clearTimeout(safeTimer);
+      const remaining = (a.duration - a.currentTime)*1000 + 1500;
+      safeTimer = setTimeout(function(){ done('tu-safe'); }, remaining);
+    }
+  };
+
+  a.src = url;
+  // iOS：同一个Audio元素换src后直接play()，不需要重新解锁
+  const p = a.play();
+  if(p) p.catch(function(e){
+    // 如果play失败，延迟重试
+    setTimeout(function(){
+      a.play().catch(function(){ done('play-fail'); });
+    }, 200);
+  });
+}
+
+// 播放一个英文句子N遍，每遍之间停顿
+function playEnTimes(url, times, onDone){
+  if(!playing || times<=0){onDone();return;}
+  playOneAudio(url, ()=>{
+    if(!playing){onDone();return;}
+    setTimeout(()=>playEnTimes(url, times-1, onDone), 500);
+  });
+}
+
+function playCurrentSeg(){
+  if(!playing||busy||!curLesson) return;
+  if(segIdx>=curLesson.segments.length){
+    // 一轮播完
+    curLoop++;
+    if(curLoop<repeatTarget){
+      // 还有重复轮次，重新开始
+      segIdx=0;
+      updateSegDisplay();
+      setTimeout(playCurrentSeg,800);
+      return;
+    }
+    showFinish(); return;
+  }
+  busy=true;
+  const s=curLesson.segments[segIdx];
+  updateSegDisplay();
+  document.getElementById('loading-line').classList.add('on');
+  document.getElementById('wave-bar').classList.remove('playing');
+  const isEn=!!s.en;
+  
+  azureTTS(s.text, isEn, s.role).then(url=>{
+    document.getElementById('loading-line').classList.remove('on');
+    if(!playing){busy=false;return;}
+    document.getElementById('wave-bar').classList.add('playing');
+    
+    if(isEn){
+      // 英文播放1遍（重复由段落数量自然控制）
+      playEnTimes(url, 1, ()=>{
+        busy=false;
+        document.getElementById('wave-bar').classList.remove('playing');
+        if(!playing) return;
+        segIdx++;
+        setTimeout(playCurrentSeg, 80);
+      });
+    } else {
+      // 中文只播1遍，严格等完
+      playOneAudio(url, ()=>{
+        busy=false;
+        document.getElementById('wave-bar').classList.remove('playing');
+        if(!playing) return;
+        segIdx++;
+        setTimeout(playCurrentSeg, 80);
+      });
+    }
+  }).catch(err=>{
+    console.error('TTS错误:', err);
+    document.getElementById('loading-line').classList.remove('on');
+    busy=false;
+    if(!playing) return;
+    segIdx++;
+    setTimeout(playCurrentSeg, 80);
+  });
+}
+
+function togglePlay(){
+  if(playing){
+    playing=false; busy=false;
+    if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+    document.getElementById('wave-bar').classList.remove('playing');
+    document.getElementById('loading-line').classList.remove('on');
+    document.getElementById('play-btn').textContent='▶ 继续播放';
+    document.getElementById('play-btn').className='ctrl-btn btn-play';
+  } else {
+    playing=true;
+    document.getElementById('play-btn').textContent='⏸ 暂停';
+    document.getElementById('play-btn').className='ctrl-btn btn-pause';
+    playCurrentSeg();
+  }
+}
+
+function jumpTo(i){
+  playing=false; busy=false;
+  if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+  document.getElementById('wave-bar').classList.remove('playing');
+  segIdx=i;
+  updateSegDisplay();
+  playing=true;
+  document.getElementById('play-btn').textContent='⏸ 暂停';
+  document.getElementById('play-btn').className='ctrl-btn btn-pause';
+  setTimeout(playCurrentSeg,300);
+}
+
+function skipSeg(d){
+  playing=false; busy=false;
+  if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+  document.getElementById('wave-bar').classList.remove('playing');
+  segIdx=Math.max(0,Math.min(curLesson.segments.length-1,segIdx+d));
+  updateSegDisplay();
+  playing=true;
+  document.getElementById('play-btn').textContent='⏸ 暂停';
+  document.getElementById('play-btn').className='ctrl-btn btn-pause';
+  setTimeout(playCurrentSeg,300);
+}
+
+function showFinish(){
+  playing=false;
+  document.getElementById('play-btn').textContent='🔄 再听一遍';
+  document.getElementById('play-btn').className='ctrl-btn btn-play';
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('wave-bar').classList.remove('playing');
+  const fc=document.getElementById('finish-card');
+  fc.classList.add('show');
+  document.getElementById('finish-title').textContent='第'+curLesson.id+'集完成！';
+  document.getElementById('finish-msg').textContent='猫猫今天很勇敢！一起复习今天的英语吧。';
+  // 复习单词
+  const fr=document.getElementById('finish-review');
+  fr.style.display='block';
+  let html='';
+  curLesson.review.forEach(r=>{
+    html+=`<div class="review-item"><span class="review-zh">${r.zh}</span><span class="review-en">${r.en}</span></div>`;
+  });
+  document.getElementById('review-list').innerHTML=html;
+  fr.scrollIntoView({behavior:'smooth'});
+  // 重置按钮为再听一遍
+  document.getElementById('play-btn').onclick=()=>{
+    segIdx=0;
+    document.getElementById('finish-card').classList.remove('show');
+    document.getElementById('finish-review').style.display='none';
+    document.getElementById('play-btn').onclick=togglePlay;
+    togglePlay();
+  };
+}
+
+function backToList(){
+  playing=false; busy=false;
+  if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s-list').classList.add('on');
+  window.scrollTo(0,0);
+}
+
+// 微信检测
+function isWechat(){
+  return /MicroMessenger/i.test(navigator.userAgent);
+}
+function showLockedTip(){
+  const tip = document.getElementById('locked-tip');
+  if(tip){ tip.style.display='flex'; setTimeout(()=>tip.style.display='none',2500); }
+}
+// 模式切换
+let listenMode = false;
+function toggleMode(){
+  listenMode = !listenMode;
+  const btn = document.getElementById('mode-btn');
+  const segBox = document.getElementById('seg-display');
+  const enList = document.getElementById('en-list');
+  if(listenMode){
+    btn.textContent = '📖 阅读';
+    btn.style.background = 'rgba(255,255,255,0.2)';
+    if(segBox) segBox.style.display = 'none';
+    if(enList) enList.parentElement.style.display = 'none';
+  } else {
+    btn.textContent = '🎧 聆听';
+    btn.style.background = 'none';
+    if(segBox) segBox.style.display = '';
+    if(enList) enList.parentElement.style.display = '';
+  }
+}
+
+function dismissTip(){
+  document.getElementById('wechat-tip').style.display='none';
+}
+if(isWechat()){
+  document.getElementById('wechat-tip').style.display='flex';
+}
+
+function changeRepeat(d){
+  repeatTarget=Math.max(1,Math.min(20,repeatTarget+d));
+  document.getElementById('rep-num').textContent=repeatTarget;
+  document.getElementById('repeat-sub').textContent=
+    repeatTarget===1?'播完整集 1 次后停止':'播完整集 '+repeatTarget+' 次后停止';
+}
+
+function renderList(){
+  const el=document.getElementById('lesson-list');
+  let html='';
+  let lastPhase='';
+  const phases={
+    '适应期':'第一阶段 · 适应期（第1-5课）',
+    '探索好奇期':'第二阶段 · 探索好奇期（第6-9课）',
+    '关系建立期':'第三阶段 · 关系建立期（第10-13课）',
+    '社交突破期':'第四阶段 · 社交突破期（第14-16课）',
+    '独立稳定期':'第五阶段 · 独立稳定期（第17-18课）',
+    '身份建立期':'第六阶段 · 身份建立期（第19-20集）',
+  };
+  LESSONS.forEach(l=>{
+    if(l.phase!==lastPhase){
+      html+=`<div class="phase-title">${phases[l.phase]||l.phase}</div>`;
+      lastPhase=l.phase;
+    }
+    const isLocked = l.id > 1;
+    html+=`<div class="lesson-card ${l.phaseClass}${isLocked?' locked-preview':''}" onclick="openLesson(${l.id-1})" style="${isLocked?'opacity:0.55':''}">
+      <div class="lesson-num" style="background:${l.color}">${l.emoji}</div>
+      <div class="lesson-info">
+        <div class="name">第${l.id}集 · ${l.title}</div>
+        <div class="sub">${isLocked?'🔒 即将开放':l.segments.length+'段故事 · '+l.review.length+'句英语'}</div>
+        <div class="emotion">${l.emotion}</div>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function openLesson(idx){
+  // 只有第1集开放，其余锁定
+  if(idx > 0){
+    const card = document.querySelector('.lesson-card.locked-preview');
+    showLockedTip();
+    return;
+  }
+  curLesson=LESSONS[idx];
+  segIdx=0; playing=false; busy=false; curLoop=0;
+  if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+  document.getElementById('play-title').textContent='第'+curLesson.id+'集 · '+curLesson.title;
+  document.getElementById('play-phase').textContent=curLesson.phase;
+  document.getElementById('play-btn').textContent='▶ 开始播放';
+  document.getElementById('play-btn').className='ctrl-btn btn-play';
+  document.getElementById('play-btn').onclick=togglePlay;
+  document.getElementById('finish-card').classList.remove('show');
+  document.getElementById('finish-review').style.display='none';
+  document.getElementById('loading-line').classList.remove('on');
+  document.getElementById('wave-bar').classList.remove('playing');
+  document.getElementById('round-badge').textContent='';
+  renderEnList();
+  updateSegDisplay();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s-play').classList.add('on');
+  window.scrollTo(0,0);
+}
+
+function renderEnList(){
+  const el=document.getElementById('en-list');
+  if(!curLesson){el.innerHTML='';return;}
+  let html='';
+  const enSegs=curLesson.segments.map((s,i)=>({...s,origIdx:i})).filter(s=>s.en);
+  const seen=new Set();
+  enSegs.forEach((s,n)=>{
+    const key=s.text.replace(/[.!?\s]/g,'').toLowerCase();
+    const rev=curLesson.review.find(r=>{
+      const enKey=r.en.replace(/[.!?\s]/g,'').toLowerCase();
+      const segKey=s.text.replace(/[.!?\s]/g,'').toLowerCase();
+      return enKey===segKey || segKey.includes(enKey) || enKey.includes(segKey);
+    });
+    const zh=rev?rev.zh:'';
+    const displayKey=s.role+':'+key;
+    if(seen.has(displayKey)) return;
+    seen.add(displayKey);
+    html+=`<div class="en-item" id="ei-${s.origIdx}" onclick="jumpTo(${s.origIdx})">
+      <div class="en-item-num">${s.icon}</div>
+      <div><div class="en-item-text">${s.text}</div>${zh?`<div class="en-item-zh">${zh}</div>`:''}</div>
+    </div>`;
+  });
+  el.innerHTML=html||'<div style="color:var(--text2);font-size:13px;padding:8px 4px">本集暂无英文句子</div>';
+}
+
+function updateSegDisplay(){
+  if(!curLesson) return;
+  const idx=segIdx<curLesson.segments.length?segIdx:curLesson.segments.length-1;
+  const s=curLesson.segments[idx];
+  const r=ROLES[s.role]||ROLES.narrator;
+  document.getElementById('seg-icon').textContent=s.icon||'🎙️';
+  document.getElementById('seg-role').textContent=r.name;
+  document.getElementById('seg-badge').textContent=r.badge;
+  document.getElementById('seg-badge').className='seg-role-badge badge-'+r.class;
+  const textEl=document.getElementById('seg-text');
+  textEl.textContent=s.text;
+  textEl.className='seg-text'+(s.en?' english':'')+(s.role==='narrator'?' narrator':'');
+  const pct=Math.round((idx/curLesson.segments.length)*100);
+  document.getElementById('progress-fill').style.width=pct+'%';
+  const rb=document.getElementById('round-badge');
+  if(repeatTarget>1){rb.textContent='第 '+(curLoop+1)+' / '+repeatTarget+' 轮';}
+  else{rb.textContent='';}
+  document.querySelectorAll('.en-item').forEach(el=>{
+    const eidx=parseInt(el.id.replace('ei-',''));
+    el.className='en-item'+(eidx===idx?' active':eidx<idx?' done':'');
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", function(){
+  renderList();
+});
+</script>
+</body>
+</html>
