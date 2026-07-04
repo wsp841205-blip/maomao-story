@@ -246,6 +246,13 @@ body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)
   <div class="finish-review" id="finish-review" style="display:none">
     <div class="review-title">📚 今日英语回顾</div>
     <div id="review-list"></div>
+    <div id="next-ep-bar" style="display:none;margin-top:20px;text-align:center;">
+      <button id="next-ep-btn" style="background:#E87722;color:#fff;border:none;border-radius:24px;padding:14px 32px;font-size:16px;font-weight:700;cursor:pointer;width:100%;max-width:320px;">
+        ▶ 下一集
+      </button>
+      <div id="next-ep-count" style="margin-top:8px;color:#888;font-size:13px;"></div>
+      <button id="next-ep-cancel" style="background:none;border:none;color:#aaa;font-size:12px;margin-top:4px;cursor:pointer;text-decoration:underline;">取消自动播放</button>
+    </div>
   </div>
 </div>
 
@@ -253,6 +260,88 @@ body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)
 <script>
 // ══ 故事数据 ══
 const LESSONS = [
+  {
+    "id": 0,
+    "title": "写给爸爸妈妈的话",
+    "phase": "🌱 家长导读",
+    "emotion": "在开始之前，先听我说几句",
+    "review": [],
+    "segments": [
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "这份导读，是写给爸爸妈妈的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫是一只小花猫。第一天去幼儿园，他哭了，紧紧抱着妈妈的腿不肯松手。但是他还是走进去了。这个故事，就是从那一步开始的。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "这所幼儿园相信三件事。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "成长永远比结果重要。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "没有坏孩子，只有还没被理解的孩子。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "所有情绪都可以存在，都会慢慢过去。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "于是我们这样陪伴孩子——"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "朋友不是奖励，是一起长大的自然结果。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "英语就是生活的一部分，不是学习任务。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "古诗是猫猫理解世界的方法，不是背诵任务。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "每一个孩子都有自己的天赋，不需要比较。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "每一天都会比昨天长大一点点。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "原来，害怕也可以往前走。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "好了，现在让我们一起，去幼儿园门口，等猫猫。第一集，开始了。"
+      }
+    ],
+    "phaseClass": "prologue",
+    "color": "#E87722",
+    "emoji": "🎙️"
+  },
   {
     "id": 1,
     "title": "第一天到幼儿园门口",
@@ -559,7 +648,7 @@ const LESSONS = [
       },
       {
         "zh": "我洗好手了",
-        "en": "I need to wash my hands."
+        "en": "I washed my hands!"
       }
     ],
     "segments": [
@@ -780,12 +869,12 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "出来之后，猫猫没有等可可提醒。他走向洗手台，小声说——"
+        "text": "出来之后，猫猫没有等可可提醒。他走到洗手台，认真地洗完手，转过身，小声说——"
       },
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "I need to wash my hands.",
+        "text": "I washed my hands!",
         "en": true
       },
       {
@@ -1003,7 +1092,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "我肚子都叫啦……"
+        "text": "咕噜噜——我肚子都叫啦……"
       },
       {
         "role": "koko",
@@ -1024,7 +1113,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "猫猫拿起叉子，又放下。他偷偷看看可可——可可已经吃了两大口。猫猫轻轻碰了一下面条，又缩回来。"
+        "text": "猫猫拿起叉子，又放下。他偷偷看看可可——可可已经吃了两大口。猫猫又抬头看了看旁边的小朋友，每个人都在低头吃，没有人皱眉头。只有他还没动。猫猫轻轻碰了一下面条，又缩回来。"
       },
       {
         "role": "koko",
@@ -1107,6 +1196,12 @@ const LESSONS = [
         "role": "narrator",
         "icon": "🎙️",
         "text": "猫猫吃了几口，觉得嘴巴有点干。他端起杯子，发现空空的。"
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "渴了就说——Can I have some water？",
+        "en": true
       },
       {
         "role": "evan",
@@ -1507,7 +1602,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "我不知道啊，但我发现了——老师举什么，说的就是什么的英文！我家里的点读书里有！"
+        "text": "我不知道啊，但我发现了——老师举什么，说的就是什么的英文！它上面有绿帽子，我认识它！"
       },
       {
         "role": "narrator",
@@ -1518,6 +1613,23 @@ const LESSONS = [
         "role": "evan",
         "icon": "🐱",
         "text": "It's delicious!!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫又看了一眼西瓜盘——只剩最后几块了，他想再来一口。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Can I have some more watermelon?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Of course, Maomao! Here you go!",
         "en": true
       },
       {
@@ -1534,6 +1646,11 @@ const LESSONS = [
         "role": "narrator",
         "icon": "🎙️",
         "text": "猫猫犹豫了一下，走过去，把手里的草莓，放在了小羊旁边。什么都没有说，就在她旁边，坐了一会儿。"
+      },
+      {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "（轻轻地）草莓猫……谢谢你。"
       },
       {
         "role": "narrator",
@@ -1683,6 +1800,11 @@ const LESSONS = [
         "text": "猫猫认出她了——就是那天哭着的小羊，他给过她一颗草莓的那只。"
       },
       {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "可可一看到猫猫进来，马上跳起来，两手抓了一下脸——"
+      },
+      {
         "role": "koko",
         "icon": "🦘",
         "text": "猫猫！这是咩咩！她也是我们班的！"
@@ -1779,6 +1901,12 @@ const LESSONS = [
         "en": true
       },
       {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Here you go, everyone! Enjoy!",
+        "en": true
+      },
+      {
         "role": "narrator",
         "icon": "🎙️",
         "text": "老师把食物摆好，猫猫拿起一片披萨，咬了一口——"
@@ -1854,9 +1982,14 @@ const LESSONS = [
         "text": "猫猫愣了一下，擦了擦嘴。原来，咩咩什么都注意到了。"
       },
       {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "咩咩没有说话，轻轻碰了碰猫猫的爪子。"
+      },
+      {
         "role": "meimei",
         "icon": "🐑",
-        "text": "谢谢你，猫猫。你是我的朋友。"
+        "text": "朋友。"
       },
       {
         "role": "evan",
@@ -1994,6 +2127,10 @@ const LESSONS = [
       {
         "zh": "冰淇淋",
         "en": "Ice cream!"
+      },
+      {
+        "zh": "好的，请给我",
+        "en": "Yes, please!"
       }
     ],
     "segments": [
@@ -2027,32 +2164,12 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "三个人拼图拼到一半，发现少了一块——怎么找都找不到。"
-      },
-      {
-        "role": "meimei",
-        "icon": "🐑",
-        "text": "是不是掉到桌子底下了？"
-      },
-      {
-        "role": "narrator",
-        "icon": "🎙️",
-        "text": "猫猫趴下去看，可可也趴下去看，咩咩在旁边踮着脚找。最后，是猫猫先发现的——藏在椅子腿后面。"
+        "text": "三个人拼图拼到一半，发现少了一块——找来找去，猫猫趴下去，在椅子腿后面找到了。"
       },
       {
         "role": "evan",
         "icon": "🐱",
         "text": "找到了！"
-      },
-      {
-        "role": "narrator",
-        "icon": "🎙️",
-        "text": "三个人一起把最后一块拼上去，拼图完成了。"
-      },
-      {
-        "role": "meimei",
-        "icon": "🐑",
-        "text": "猫猫找到的！"
       },
       {
         "role": "koko",
@@ -2152,6 +2269,18 @@ const LESSONS = [
         "role": "evan",
         "icon": "🐱",
         "text": "Yes! It's delicious!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Do you want more?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Yes, please!",
         "en": true
       },
       {
@@ -2459,7 +2588,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "Blue……蓝色……春水碧于天……碧就是蓝，就是Blue！"
+        "text": "Blue……蓝色……碧就是Blue，就是水的颜色！春水碧于天！"
       },
       {
         "role": "teacher",
@@ -2534,6 +2663,18 @@ const LESSONS = [
         "text": "每辆车都有自己的位置。"
       },
       {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Maomao, what colour is your car?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "It's orange! My favourite!",
+        "en": true
+      },
+      {
         "role": "narrator",
         "icon": "🎙️",
         "text": "老师走过来，看到了，弯下腰仔细看了看——"
@@ -2585,7 +2726,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "妈妈！今天学颜色！Red是红色，就是霜叶红于二月花的红！Blue是蓝色，就是春水碧于天的碧！White是白色，就是寒江雪的雪！"
+        "text": "妈妈！今天学颜色！Red是红色，就是霜叶红于二月花的红！Blue是蓝色，碧就是Blue，就是水的颜色！White是白色，就是寒江雪的雪！"
       },
       {
         "role": "mum",
@@ -2737,7 +2878,13 @@ const LESSONS = [
       {
         "role": "teacher",
         "icon": "🐰",
-        "text": "One, two, three, four, five, six, seven, eight, nine, ten!",
+        "text": "One, two, three, four, five! Ready?",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Six, seven, eight, nine, ten! How many?",
         "en": true
       },
       {
@@ -2748,7 +2895,7 @@ const LESSONS = [
       {
         "role": "koko",
         "icon": "🦘",
-        "text": "一，二，三……等等等等，我重新数！"
+        "text": "一、二、三、四、五……等等等等！我刚刚数到几了？重新来！"
       },
       {
         "role": "narrator",
@@ -2781,7 +2928,7 @@ const LESSONS = [
       {
         "role": "koko",
         "icon": "🦘",
-        "text": "等等……我数到几了……"
+        "text": "等一下……我又数乱了……"
       },
       {
         "role": "narrator",
@@ -2824,14 +2971,14 @@ const LESSONS = [
       {
         "role": "teacher",
         "icon": "🐰",
-        "text": "Both correct! By the way, our class has Fourteen friends!",
+        "text": "Both correct! Look around — we have so many friends!",
         "en": true
       },
       {
         "role": "koko",
         "icon": "🦘",
-        "text": "Fourteen！！我们班有Fourteen个小朋友！好多！！",
-        "en": true
+        "text": "好多朋友！！",
+        "en": false
       },
       {
         "role": "narrator",
@@ -2952,8 +3099,8 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "现在不一样了。我有停车场，有豆豆，还有好多朋友。老师说我们班有Fourteen friends！",
-        "en": true
+        "text": "现在不一样了。我有停车场，有豆豆，还有好多朋友。幼儿园里好多好多朋友！",
+        "en": false
       }
     ]
   },
@@ -3034,7 +3181,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "猫猫站在操场上，抬起头，看着蓝色的天空，白色的云——"
+        "text": "猫猫站在操场上，抬起头——树上有几只小鸟跳来跳去，叫着，树叶被风吹得沙沙响，天空是蓝色的，云是白色的——"
       },
       {
         "role": "evan",
@@ -3088,6 +3235,23 @@ const LESSONS = [
       {
         "role": "teacher",
         "icon": "🐰",
+        "text": "Stomp your feet!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "大家咚咚咚地跺脚，猫猫跺得最用力，地板都震了一下。"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Stomp your feet!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
         "text": "Very good, everyone!",
         "en": true
       },
@@ -3124,7 +3288,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "他一个人在雪里钓鱼，很安静，很专心。"
+        "text": "可能……有鱼陪他。他在等鱼上钩，鱼也在陪他。"
       },
       {
         "role": "doudou",
@@ -3254,7 +3418,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "好玩！老师说Exercise，就是做操的意思！说Hands up，我们就把手举起来；说Jump，我们就跳！",
+        "text": "好玩！老师说Exercise，就是做操的意思！说Hands up，我们就把手举起来；说Jump，我们就跳！说Stomp your feet，我们就咚咚咚跺脚！",
         "en": true
       },
       {
@@ -3437,6 +3601,23 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
+        "text": "猫猫想了想，转向可可——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "可可，How do you feel?",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Excited！！！超级超级开心！！！",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
         "text": "雨停了，自由活动时间，四个人去操场玩。可可踩了一个水坑——哗！鞋子湿了。"
       },
       {
@@ -3447,7 +3628,7 @@ const LESSONS = [
       {
         "role": "doudou",
         "icon": "🐻",
-        "text": "备用袜子。"
+        "text": "备用。"
       },
       {
         "role": "koko",
@@ -3777,7 +3958,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "猫猫深吸一口气，慢慢地，把手举起来。"
+        "text": "猫猫深吸一口气，慢慢地，把手举起来。手有点重，像挂了一辆小汽车。"
       },
       {
         "role": "teacher",
@@ -3818,6 +3999,29 @@ const LESSONS = [
         "role": "teacher",
         "icon": "🐰",
         "text": "Excellent, Maomao!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "One more! What colour is this book?",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫没有犹豫，这次举手举得很快——"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Red!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Yes! Red! Amazing, Maomao!",
         "en": true
       },
       {
@@ -3900,7 +4104,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "Blue就是蓝色，就是春水碧于天！Blue就是碧！"
+        "text": "碧就是Blue！"
       },
       {
         "role": "mum",
@@ -4115,6 +4319,23 @@ const LESSONS = [
         "en": true
       },
       {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "This is a fire truck!",
+        "en": true
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "Fire truck!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "叮叮的眼睛更圆了，转了一个小圈。"
+      },
+      {
         "role": "narrator",
         "icon": "🎙️",
         "text": "叮叮学完，转了个小圈——高兴的时候，她就会这样。"
@@ -4139,6 +4360,21 @@ const LESSONS = [
         "role": "mum",
         "icon": "👩",
         "text": "猫猫，你第一天来幼儿园的时候，也是这样的。"
+      },
+      {
+        "role": "mum",
+        "icon": "👩",
+        "text": "你为什么要去找她？"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "因为我知道她是什么感觉。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "猫猫停了一下。"
       },
       {
         "role": "narrator",
@@ -4221,7 +4457,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "我第一天也哭了。我还拉着妈妈不肯松手呢。但是后来，就好了。"
+        "text": "我第一天也哭了。我当时拉着妈妈，拉了很久很久。但是后来，就好了。"
       },
       {
         "role": "dingding",
@@ -4321,6 +4557,22 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
+        "text": "叮叮深吸一口气，站起来，慢慢走到前面去了。猫猫没有说话，只是看着她。"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Wonderful, Dingding!",
+        "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "叮叮回到位置，悄悄看了猫猫一眼。猫猫冲她竖起大拇指。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
         "text": "下午自由活动，猫猫带叮叮回到秘密基地。可可和咩咩也在，豆豆在角落搭积木。猫猫拿起一辆红色的大卡车——"
       },
       {
@@ -4413,6 +4665,11 @@ const LESSONS = [
         "text": "妈妈，我会拉着叮叮的手了。"
       },
       {
+        "role": "mum",
+        "icon": "👩",
+        "text": "就像可可当初拉着你一样。"
+      },
+      {
         "role": "narrator",
         "icon": "🎙️",
         "text": "妈妈没有说话，只是紧紧握了握猫猫的手。"
@@ -4458,12 +4715,12 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "妈妈快点！今天去动物园！两个黄鹂鸣翠柳，一行白鹭上青天！动物园里有没有白鹭妈妈？"
+        "text": "妈妈快点！今天去动物园！两个黄鹂鸣翠柳，一行白鹭上青天！动物园里会有鸟吗！！"
       },
       {
         "role": "mum",
         "icon": "👩",
-        "text": "可能有鸟，但不一定是白鹭。"
+        "text": "可能有鸟！"
       },
       {
         "role": "narrator",
@@ -4550,6 +4807,18 @@ const LESSONS = [
         "en": true
       },
       {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Elephant！！好大！！",
+        "en": true
+      },
+      {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "Elephant！",
+        "en": true
+      },
+      {
         "role": "doudou",
         "icon": "🐻",
         "text": "……好长。"
@@ -4559,22 +4828,6 @@ const LESSONS = [
         "icon": "🦊",
         "text": "Elephant……",
         "en": true
-      },
-      {
-        "role": "narrator",
-        "icon": "🎙️",
-        "text": "第二个展区——老虎区。一只橙色的老虎，懒洋洋地趴在大石头上。"
-      },
-      {
-        "role": "teacher",
-        "icon": "🐰",
-        "text": "This is a tiger! Tiger!",
-        "en": true
-      },
-      {
-        "role": "koko",
-        "icon": "🦘",
-        "text": "Tiger！！比可可大多了！！"
       },
       {
         "role": "narrator",
@@ -4613,7 +4866,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "再走一段，角落里，一只孔雀慢慢展开了尾巴——像一把彩色的大扇子，蓝的，绿的，金的。"
+        "text": "再往前走，角落里忽然安静了一下——一只孔雀慢慢地，把尾巴展开来，像一把大扇子，一点一点打开，蓝的，绿的，金的，在阳光里闪着光。"
       },
       {
         "role": "teacher",
@@ -4655,7 +4908,19 @@ const LESSONS = [
       {
         "role": "teacher",
         "icon": "🐰",
-        "text": "Shall we take the tram? Take the tram!",
+        "text": "Are you ready?",
+        "en": true
+      },
+      {
+        "role": "koko",
+        "icon": "🦘",
+        "text": "Yes！！",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Let's go! Take the tram!",
         "en": true
       },
       {
@@ -4691,7 +4956,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "妈妈，两个黄鹂鸣翠柳，一行白鹭上青天——今天在动物园，真的看到鸟了！还有孔雀！Peacock！就是两个黄鹂鸣翠柳里的那种感觉！",
+        "text": "妈妈，今天在动物园，真的看到鸟了！孔雀！Peacock！",
         "en": true
       },
       {
@@ -4731,7 +4996,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "第十六天早上，闹钟还没响，猫猫自己醒了。他从床上爬起来，去找妈妈——"
+        "text": "第十六天早上，闹钟还没响，猫猫自己醒了。他从床上爬起来，比妈妈先梳洗好，去找妈妈——"
       },
       {
         "role": "evan",
@@ -4751,7 +5016,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "吃完早饭，猫猫自己走进房间，把书本和水壶放进书包，拉上拉链，背上书包，走出来——"
+        "text": "吃完早饭，猫猫自己走进房间，换好衣服，背上书包，走出来——"
       },
       {
         "role": "evan",
@@ -4767,7 +5032,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "对啊，书，水壶，还有今天要带的汽车，都装好了。"
+        "text": "对啊，我自己换好了，汽车也带了。"
       },
       {
         "role": "narrator",
@@ -4831,6 +5096,21 @@ const LESSONS = [
         "en": true
       },
       {
+        "role": "dingding",
+        "icon": "🦊",
+        "text": "猫猫！你今天好快！比我先到！"
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "因为我想快点见到你们。"
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "可可高兴地抓了一下脸。"
+      },
+      {
         "role": "narrator",
         "icon": "🎙️",
         "text": "下午自由活动，五个人在秘密基地里。猫猫拿出今天带来的汽车——一辆白色的大油罐车。"
@@ -4838,7 +5118,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "这个叫tanker truck，就是运油的大车，运去加油站给汽车加油的！"
+        "text": "这个叫tanker truck，油罐车！"
       },
       {
         "role": "dingding",
@@ -4958,6 +5238,11 @@ const LESSONS = [
         "en": false
       },
       {
+        "role": "meimei",
+        "icon": "🐑",
+        "text": "（轻轻拉了拉猫猫的袖子）"
+      },
+      {
         "role": "narrator",
         "icon": "🎙️",
         "text": "猫猫低下头，看着手里的蓝色积木。然后，他站起来。"
@@ -4965,7 +5250,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "豆豆……Sorry. 刚才是我不对，我说话太大声了。It's my fault.",
+        "text": "豆豆……Sorry. 我不该非要你用蓝色。It's my fault.",
         "en": true
       },
       {
@@ -4973,6 +5258,11 @@ const LESSONS = [
         "icon": "🐻",
         "text": "That's okay.",
         "en": true
+      },
+      {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "豆豆没有再说话，从积木堆里拿起一块蓝色积木，递给猫猫。"
       },
       {
         "role": "evan",
@@ -5191,7 +5481,7 @@ const LESSONS = [
       {
         "role": "evan",
         "icon": "🐱",
-        "text": "This is my brother. He runs very fast.",
+        "text": "This is my brother. He runs very fast — like a police car!",
         "en": true
       },
       {
@@ -5209,18 +5499,30 @@ const LESSONS = [
       {
         "role": "teacher",
         "icon": "🐰",
+        "text": "Do you like noodles?",
+        "en": true
+      },
+      {
+        "role": "evan",
+        "icon": "🐱",
+        "text": "Yes, I do! I love noodles!",
+        "en": true
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
         "text": "Noodles taste like home！！",
         "en": true
       },
       {
         "role": "koko",
         "icon": "🦘",
-        "text": "我下次也要画饼干！"
+        "text": "我下次也要画饼干！饼干是我最喜欢的！"
       },
       {
         "role": "meimei",
         "icon": "🐑",
-        "text": "那下次我要画冰淇淋进去。"
+        "text": "那下次我要画冰淇淋进去。冰淇淋是咩咩的家的味道。"
       },
       {
         "role": "narrator",
@@ -5296,7 +5598,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "午饭有鸡肉！豆豆默默地把自己盘子里的一块鸡肉，夹到猫猫盘子里——"
+        "text": "午饭有鸡肉！豆豆默默地把自己盘子里的一块鸡肉，夹到猫猫盘子里。猫猫抬头看他——豆豆的耳朵抖了一下，低下头。"
       },
       {
         "role": "doudou",
@@ -5309,6 +5611,17 @@ const LESSONS = [
         "text": "午睡时间到了，老师把窗帘拉上，教室里变暗了——"
       },
       {
+        "role": "narrator",
+        "icon": "🎙️",
+        "text": "老师走过来，给每个小朋友盖上小毯子——"
+      },
+      {
+        "role": "teacher",
+        "icon": "🐰",
+        "text": "Here's your blanket!",
+        "en": true
+      },
+      {
         "role": "teacher",
         "icon": "🐰",
         "text": "It's nap time! Let's close our eyes and have a rest. Sweet dreams!",
@@ -5317,7 +5630,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "教室里安静了。可可睡着了，咩咩睡着了，豆豆睡着了，叮叮睡着了。但是猫猫，睡不着。他闭着眼睛，抱着小老虎枕头，心里有一点点空空的——忽然想妈妈了。没有什么特别的原因，就是安静下来，就想了。"
+        "text": "教室里安静了。可可睡着了，脚还在轻轻踢着；咩咩睡着了；豆豆睡着了；叮叮睡着了。"
       },
       {
         "role": "evan",
@@ -5337,7 +5650,7 @@ const LESSONS = [
       {
         "role": "narrator",
         "icon": "🎙️",
-        "text": "背着背着，眼皮越来越重。小老虎枕头抱得暖暖的。没有念完，就睡着了。"
+        "text": "背着背着，声音越来越小。小老虎枕头暖暖的，眼皮像拉窗帘一样，慢慢合上了。没有念完，就睡着了。"
       },
       {
         "role": "narrator",
@@ -5651,7 +5964,7 @@ const LESSONS = [
       {
         "role": "koko",
         "icon": "🦘",
-        "text": "猫猫！！我听到了！！我也在这里！！"
+        "text": "猫猫！！快来！！Fire truck到了！！"
       },
       {
         "role": "narrator",
@@ -5972,11 +6285,11 @@ function showFinish(){
   document.getElementById('wave-bar').classList.remove('playing');
   const fc=document.getElementById('finish-card');
   fc.classList.add('show');
-  document.getElementById('finish-title').textContent='第'+curLesson.id+'集完成！';
+  document.getElementById('finish-title').textContent=curLesson.id===0?'现在，开始猫猫的故事吧 🐱':'第'+curLesson.id+'集完成！';
   document.getElementById('finish-msg').textContent='猫猫今天很勇敢！一起复习今天的英语吧。';
   // 复习单词
   const fr=document.getElementById('finish-review');
-  fr.style.display='block';
+  fr.style.display=curLesson.review.length>0?'block':'none';
   let html='';
   curLesson.review.forEach(r=>{
     html+=`<div class="review-item"><span class="review-zh">${r.zh}</span><span class="review-en">${r.en}</span></div>`;
@@ -5991,10 +6304,59 @@ function showFinish(){
     document.getElementById('play-btn').onclick=togglePlay;
     togglePlay();
   };
+
+  // ── 自动下一集 ──
+  const curIdx = LESSONS.indexOf(curLesson);
+  const nextBar = document.getElementById('next-ep-bar');
+  const nextBtn = document.getElementById('next-ep-btn');
+  const nextCount = document.getElementById('next-ep-count');
+  const cancelBtn = document.getElementById('next-ep-cancel');
+
+  // 清除上次倒计时
+  if(window._autoNextTimer){ clearInterval(window._autoNextTimer); window._autoNextTimer=null; }
+
+  if(curIdx >= 0 && curIdx < LESSONS.length - 1){
+    const nextLesson = LESSONS[curIdx + 1];
+    nextBtn.textContent = '▶ 下一集：第' + nextLesson.id + '集 · ' + nextLesson.title;
+    nextBar.style.display = 'block';
+
+    // 5秒倒计时自动跳转
+    let countdown = 5;
+    nextCount.textContent = countdown + ' 秒后自动播放下一集…';
+    window._autoNextTimer = setInterval(function(){
+      countdown--;
+      if(countdown <= 0){
+        clearInterval(window._autoNextTimer); window._autoNextTimer=null;
+        nextBar.style.display='none';
+        openLesson(curIdx + 1);
+        setTimeout(function(){ togglePlay(); }, 400);
+      } else {
+        nextCount.textContent = countdown + ' 秒后自动播放下一集…';
+      }
+    }, 1000);
+
+    // 手动点"下一集"
+    nextBtn.onclick = function(){
+      clearInterval(window._autoNextTimer); window._autoNextTimer=null;
+      nextBar.style.display='none';
+      openLesson(curIdx + 1);
+      setTimeout(function(){ togglePlay(); }, 400);
+    };
+
+    // 取消自动播放
+    cancelBtn.onclick = function(){
+      clearInterval(window._autoNextTimer); window._autoNextTimer=null;
+      nextCount.textContent = '已取消自动播放';
+      cancelBtn.style.display = 'none';
+    };
+  } else {
+    nextBar.style.display = 'none'; // 最后一集，不显示
+  }
 }
 
 function backToList(){
   playing=false; busy=false;
+  if(window._autoNextTimer){ clearInterval(window._autoNextTimer); window._autoNextTimer=null; }
   if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.getElementById('s-list').classList.add('on');
@@ -6045,7 +6407,7 @@ function changeRepeat(d){
 
 // 从 URL 参数读取解锁集数，默认只开放第1集
 const urlParams = new URLSearchParams(window.location.search);
-const unlockLevel = 20;
+const unlockLevel = 21;
 
 function renderList(){
   const el=document.getElementById('lesson-list');
@@ -6065,11 +6427,11 @@ function renderList(){
       lastPhase=l.phase;
     }
     const isLocked = l.id > unlockLevel;
-    html+=`<div class="lesson-card ${l.phaseClass}${isLocked?' locked-preview':''}" onclick="openLesson(${l.id-1})" style="${isLocked?'opacity:0.55':''}">
+    html+=`<div class="lesson-card ${l.phaseClass}${isLocked?' locked-preview':''}" onclick="openLesson(${l.id})" style="${isLocked?'opacity:0.55':''}">
       <div class="lesson-num" style="background:${l.color}">${l.emoji}</div>
       <div class="lesson-info">
-        <div class="name">第${l.id}集 · ${l.title}</div>
-        <div class="sub">${isLocked?'🔒 即将开放':l.segments.length+'段故事 · '+l.review.length+'句英语'}</div>
+        <div class="name">${l.id===0?"导读":"第"+l.id+"集"} · ${l.title}</div>
+        <div class="sub">${isLocked?'🔒 即将开放':(l.id===0?l.segments.length+'段 · 写给家长':''+l.segments.length+'段故事 · '+l.review.length+'句英语')}</div>
         <div class="emotion">${l.emotion}</div>
       </div>
     </div>`;
@@ -6087,7 +6449,7 @@ function openLesson(idx){
   curLesson=LESSONS[idx];
   segIdx=0; playing=false; busy=false; curLoop=0;
   if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
-  document.getElementById('play-title').textContent='第'+curLesson.id+'集 · '+curLesson.title;
+  document.getElementById('play-title').textContent=(curLesson.id===0?'':('第'+curLesson.id+'集 · '))+curLesson.title;
   document.getElementById('play-phase').textContent=curLesson.phase;
   document.getElementById('play-btn').textContent='▶ 开始播放';
   document.getElementById('play-btn').className='ctrl-btn btn-play';
