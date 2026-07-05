@@ -149,6 +149,12 @@ body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)
 .badge-dingding{background:var(--amber-l);color:var(--amber)}
 .badge-teacher{background:#E8F5E8;color:#5A7A3A}
 .badge-evan{background:var(--amber-l);color:var(--amber)}
+
+/* 录音模式 */
+.rec-mode-on #rec-controls { display:block !important; }
+.rec-mode-on { border: 2px solid #E87722; }
+#rec-mode-btn.active { background:#E87722; color:#fff; }
+.has-recording::after { content:'🎙️'; font-size:10px; margin-left:4px; }
 </style>
 </head>
 <body>
@@ -189,7 +195,11 @@ body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)
 <!-- ══ 故事播放页 ══ -->
 <div class="screen" id="s-play">
   <div class="story-header">
-    <button class="back-btn" onclick="backToList()">← 返回</button>
+    <button id="rec-entry-btn" onclick="openRecStudio()" 
+  style="position:absolute;right:16px;top:12px;background:#FFF3E8;border:1.5px solid #E87722;color:#E87722;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">
+  🎙️ 录音
+</button>
+<button class="back-btn" onclick="backToList()">← 返回</button>
     <button id="mode-btn" onclick="toggleMode()" style="background:none;border:1px solid rgba(255,255,255,0.4);color:white;border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer">🎧 聆听</button>
     <div class="story-title" id="play-title">第1集</div>
     <div class="story-phase" id="play-phase">适应期</div>
@@ -6003,14 +6013,14 @@ const AZURE_REGION='eastasia';
 
 // ══ 角色声音配置（已验证可用）══
 const VOICES = {
-  narrator: { voice:'zh-CN-XiaoxiaoNeural', rate:'-8%',  pitch:'0%'  },
-  mum:      { voice:'zh-CN-XiaoxiaoNeural', rate:'-5%',  pitch:'0%'  },
-  evan:     { voice:'zh-CN-XiaoxiaoNeural', rate:'-10%', pitch:'0%'  },
-  koko:     { voice:'zh-CN-XiaoxiaoNeural', rate:'+10%', pitch:'0%'  },
-  doudou:   { voice:'zh-CN-XiaoxiaoNeural', rate:'-15%', pitch:'0%'  },
-  meimei:   { voice:'zh-CN-XiaoxiaoNeural', rate:'-10%', pitch:'0%'  },
-  dingding: { voice:'zh-CN-XiaoxiaoNeural', rate:'+8%',  pitch:'0%'  },
-  teacher:  { voice:'en-US-SaraNeural',     rate:'-5%',  pitch:'0%'  },
+  narrator: { voice:'zh-CN-XiaoxiaoNeural', rate:'-5%',  pitch:'0%',  style:'calm'         },
+  mum:      { voice:'zh-CN-XiaohanNeural',  rate:'-8%',  pitch:'-2%', style:'affectionate' },
+  evan:     { voice:'zh-CN-YunxiaNeural',   rate:'-10%', pitch:'20%', style:''             },
+  koko:     { voice:'zh-CN-XiaoyiNeural',   rate:'+5%',  pitch:'8%',  style:'cheerful'     },
+  doudou:   { voice:'zh-CN-YunjianNeural',  rate:'-15%', pitch:'-5%', style:''             },
+  meimei:   { voice:'zh-CN-XiaoyouNeural',  rate:'-10%', pitch:'5%',  style:''             },
+  dingding: { voice:'zh-CN-XiaoyiNeural',   rate:'+5%',  pitch:'10%', style:'cheerful'     },
+  teacher:  { voice:'zh-CN-XiaoxiaoNeural', rate:'-3%',  pitch:'-2%', style:'friendly'     },
 };
 
 // 英文句子统一用Ana儿童声音
@@ -6067,14 +6077,77 @@ function getSharedAudio(){
 let curLesson=null, segIdx=0, playing=false, busy=false;
 let repeatTarget=1, curLoop=0;
 
+
+
+// ─── 设备原生语音TTS（iPhone/Android自带，最自然）───
+const DEVICE_VOICE_CONFIG = {
+  evan:     { pitch:1.4,  rate:0.82, gender:'male'   },  // 猫猫：高音调慢速
+  koko:     { pitch:1.15, rate:0.95, gender:'female'  },  // 可可：活泼
+  meimei:   { pitch:1.2,  rate:0.85, gender:'female'  },  // 咩咩：柔和
+  doudou:   { pitch:0.75, rate:0.80, gender:'male'    },  // 豆豆：低沉
+  dingding: { pitch:1.25, rate:0.95, gender:'female'  },  // 叮叮：轻快
+  teacher:  { pitch:1.05, rate:0.90, gender:'female'  },  // 老师：标准
+  mum:      { pitch:1.1,  rate:0.85, gender:'female'  },  // 妈妈：温柔
+  narrator: { pitch:1.0,  rate:0.88, gender:'female'  },  // 旁白：平和
+};
+
+let _zhVoices = null;
+function getZhVoices(){
+  if(_zhVoices) return _zhVoices;
+  const all = speechSynthesis.getVoices();
+  _zhVoices = all.filter(v => v.lang.startsWith('zh'));
+  return _zhVoices;
+}
+
+function deviceTTS(text, role, callback){
+  if(!('speechSynthesis' in window)){ callback(false); return; }
+  speechSynthesis.cancel();
+  
+  const cfg = DEVICE_VOICE_CONFIG[role] || DEVICE_VOICE_CONFIG.narrator;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'zh-CN';
+  utt.pitch = cfg.pitch;
+  utt.rate  = cfg.rate;
+  utt.volume = 1;
+  
+  // 选最合适的中文声音
+  const zhVoices = getZhVoices();
+  if(zhVoices.length > 0){
+    // 优先选符合性别的声音
+    const preferred = zhVoices.filter(v => {
+      const n = v.name.toLowerCase();
+      return cfg.gender === 'male' ? (n.includes('male')||n.includes('ming')||n.includes('yun')) 
+                                   : (n.includes('female')||n.includes('xiao')||n.includes('ling'));
+    });
+    utt.voice = preferred.length > 0 ? preferred[0] : zhVoices[0];
+  }
+  
+  let done = false;
+  utt.onend = () => { if(!done){done=true; document.getElementById('wave-bar').classList.remove('playing'); callback(true);} };
+  utt.onerror = () => { if(!done){done=true; callback(false);} };
+  
+  document.getElementById('wave-bar').classList.add('playing');
+  currentAudio = { pause: () => speechSynthesis.cancel() };
+  speechSynthesis.speak(utt);
+  
+  // iOS 需要定期 resume
+  const resumeTimer = setInterval(()=>{ if(speechSynthesis.paused) speechSynthesis.resume(); }, 200);
+  utt.onend = () => { clearInterval(resumeTimer); if(!done){done=true; document.getElementById('wave-bar').classList.remove('playing'); callback(true);} };
+  utt.onerror = () => { clearInterval(resumeTimer); if(!done){done=true; callback(false);} };
+}
+
 async function azureTTS(text, isEn, role){
   const cacheKey=(isEn?'en:':'zh:')+text;
   if(audioCache[cacheKey]) return audioCache[cacheKey];
   const voice = isEn ? EN_VOICE : (VOICES[role]||VOICES.narrator).voice;
   const rate  = isEn ? '-5%'    : (VOICES[role]||VOICES.narrator).rate;
+  const pitch = isEn ? '0%'     : (VOICES[role]||VOICES.narrator).pitch||'0%';
   const lang  = isEn ? 'en-US'  : 'zh-CN';
   const clean = text.replace(/[<>]/g,' ');
-  const ssml=`<speak version='1.0' xml:lang='${lang}'><voice name='${voice}'><prosody rate='${rate}'>${clean}</prosody></voice></speak>`;
+  const style = isEn ? '' : (VOICES[role]||VOICES.narrator).style||'';
+  const styleOpen  = style ? `<mstts:express-as style="${style}">` : '';
+  const styleClose = style ? '</mstts:express-as>' : '';
+  const ssml=`<speak version='1.0' xml:lang='${lang}' xmlns:mstts='http://www.w3.org/2001/mstts'><voice name='${voice}'>${styleOpen}<prosody rate='${rate}' pitch='${pitch}'>${clean}</prosody>${styleClose}</voice></speak>`;
   const resp=await fetch(`https://${AZURE_REGION}.tts.speech.microsoft.com/cognitiveservices/v1`,{
     method:'POST',
     headers:{'Ocp-Apim-Subscription-Key':AZURE_KEY,'Content-Type':'application/ssml+xml','X-Microsoft-OutputFormat':'audio-16khz-128kbitrate-mono-mp3'},
@@ -6185,6 +6258,43 @@ function playCurrentSeg(){
   document.getElementById('wave-bar').classList.remove('playing');
   const isEn=!!s.en;
   
+  // 优先使用家长录音
+  const recKey='rec2_'+curLesson.id+'_'+s.role+'_'+encodeURIComponent(s.text.substring(0,30));
+  const recData=localStorage.getItem(recKey);
+  if(recData){
+    document.getElementById('loading-line').classList.remove('on');
+    if(!playing){busy=false;return;}
+    document.getElementById('wave-bar').classList.add('playing');
+    playOneAudio(recData,()=>{
+      busy=false;
+      document.getElementById('wave-bar').classList.remove('playing');
+      if(!playing) return;
+      segIdx++;
+      setTimeout(playCurrentSeg,80);
+    });
+    return;
+  }
+  // 中文用设备原生语音（iPhone/Android自带，更自然），英文继续用Azure
+  if(!isEn && s.role !== 'narrator' && 'speechSynthesis' in window){
+    deviceTTS(s.text, s.role, function(ok){
+      document.getElementById('loading-line').classList.remove('on');
+      if(!playing){busy=false;return;}
+      busy=false;
+      document.getElementById('wave-bar').classList.remove('playing');
+      if(!ok){
+        // 设备语音失败，降级用Azure
+        azureTTS(s.text, false, s.role).then(url=>{
+          if(!playing){busy=false;return;}
+          document.getElementById('wave-bar').classList.add('playing');
+          playOneAudio(url,()=>{busy=false;document.getElementById('wave-bar').classList.remove('playing');if(!playing)return;segIdx++;setTimeout(playCurrentSeg,80);});
+        }).catch(()=>{busy=false;segIdx++;setTimeout(playCurrentSeg,200);});
+        return;
+      }
+      segIdx++;
+      setTimeout(playCurrentSeg,80);
+    });
+    return;
+  }
   azureTTS(s.text, isEn, s.role).then(url=>{
     document.getElementById('loading-line').classList.remove('on');
     if(!playing){busy=false;return;}
@@ -6222,6 +6332,7 @@ function playCurrentSeg(){
 function togglePlay(){
   if(playing){
     playing=false; busy=false;
+    if('speechSynthesis' in window) speechSynthesis.cancel();
     if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
     document.getElementById('wave-bar').classList.remove('playing');
     document.getElementById('loading-line').classList.remove('on');
@@ -6237,7 +6348,8 @@ function togglePlay(){
 
 function jumpTo(i){
   playing=false; busy=false;
-  if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
   document.getElementById('wave-bar').classList.remove('playing');
   segIdx=i;
   updateSegDisplay();
@@ -6258,7 +6370,8 @@ function jumpTo(i){
 
 function skipSeg(d){
   playing=false; busy=false;
-  if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
   document.getElementById('wave-bar').classList.remove('playing');
   segIdx=Math.max(0,Math.min(curLesson.segments.length-1,segIdx+d));
   updateSegDisplay();
@@ -6357,7 +6470,8 @@ function showFinish(){
 function backToList(){
   playing=false; busy=false;
   if(window._autoNextTimer){ clearInterval(window._autoNextTimer); window._autoNextTimer=null; }
-  if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.getElementById('s-list').classList.add('on');
   window.scrollTo(0,0);
@@ -6448,7 +6562,8 @@ function openLesson(idx){
   }
   curLesson=LESSONS[idx];
   segIdx=0; playing=false; busy=false; curLoop=0;
-  if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+    if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
   document.getElementById('play-title').textContent=(curLesson.id===0?'':('第'+curLesson.id+'集 · '))+curLesson.title;
   document.getElementById('play-phase').textContent=curLesson.phase;
   document.getElementById('play-btn').textContent='▶ 开始播放';
@@ -6518,6 +6633,127 @@ function updateSegDisplay(){
 document.addEventListener("DOMContentLoaded", function(){
   renderList();
 });
+
+
+// ─── 录音工作室 ───
+const REC_CHARS = {
+  evan:     {name:'🐱 猫猫', color:'#E87722'},
+  koko:     {name:'🦘 可可', color:'#388E3C'},
+  meimei:   {name:'🐑 咩咩', color:'#AD1457'},
+  doudou:   {name:'🐻 豆豆', color:'#1565C0'},
+  dingding: {name:'🦊 叮叮', color:'#E8740A'},
+  teacher:  {name:'🐰 兔子老师', color:'#00838F'},
+  mum:      {name:'👩 妈妈', color:'#EF9A9A'},
+  narrator: {name:'🎙️ 旁白', color:'#888'},
+};
+let recChar = null;
+let recLines = [];
+let recLineIdx = 0;
+let recMediaRec = null;
+let recChunksArr = [];
+let recLineBlob = null;
+
+function openRecStudio(){
+  if(!curLesson){ alert('请先打开一集故事'); return; }
+  document.getElementById('rec-studio').style.display='block';
+  buildCharList();
+}
+function closeRecStudio(){
+  document.getElementById('rec-studio').style.display='none';
+}
+function showCharList(){
+  document.getElementById('rec-char-list').style.display='grid';
+  document.getElementById('rec-lines-area').style.display='none';
+}
+function buildCharList(){
+  const list = document.getElementById('rec-char-list');
+  list.innerHTML='';
+  // 统计当前集各角色台词数
+  const counts={};
+  curLesson.segments.forEach(s=>{ counts[s.role]=(counts[s.role]||0)+1; });
+  Object.entries(REC_CHARS).forEach(([role,info])=>{
+    if(!counts[role]) return;
+    const recCount = curLesson.segments.filter(s=>s.role===role&&localStorage.getItem('rec2_'+curLesson.id+'_'+role+'_'+encodeURIComponent(s.text.substring(0,30)))).length;
+    const div=document.createElement('div');
+    div.style.cssText=`background:#FFF8F0;border:2px solid ${info.color};border-radius:14px;padding:14px;text-align:center;cursor:pointer;`;
+    div.innerHTML=`<div style="font-size:18px;font-weight:700;color:${info.color}">${info.name}</div>
+      <div style="font-size:11px;color:#888;margin-top:4px;">${recCount}/${counts[role]}句已录</div>`;
+    div.onclick=()=>startCharRec(role);
+    list.appendChild(div);
+  });
+  showCharList();
+}
+function startCharRec(role){
+  recChar=role;
+  recLines=curLesson.segments.map((s,i)=>({...s,idx:i})).filter(s=>s.role===role);
+  recLineIdx=0;
+  document.getElementById('rec-char-list').style.display='none';
+  document.getElementById('rec-lines-area').style.display='block';
+  document.getElementById('rec-char-name').textContent=REC_CHARS[role].name;
+  showLine();
+}
+function showLine(){
+  if(recLineIdx>=recLines.length){ finishCharRec(); return; }
+  const s=recLines[recLineIdx];
+  document.getElementById('rec-line-text').textContent=s.text;
+  document.getElementById('rec-progress').textContent=(recLineIdx+1)+' / '+recLines.length;
+  const key='rec2_'+curLesson.id+'_'+recChar+'_'+encodeURIComponent(s.text.substring(0,30));
+  const hasRec=!!localStorage.getItem(key);
+  document.getElementById('rec-start-btn').textContent='⏺ 开始录音';
+  document.getElementById('rec-start-btn').style.background='#E87722';
+  document.getElementById('rec-listen-btn').style.display=hasRec?'inline-block':'none';
+  document.getElementById('rec-next-btn').style.display=hasRec?'block':'none';
+  document.getElementById('rec-finish-btn').style.display=(recLineIdx===recLines.length-1&&hasRec)?'block':'none';
+  document.getElementById('rec-line-status').textContent=hasRec?'✅ 已有录音':'';
+  recLineBlob=null;
+}
+function toggleLineRec(){
+  if(recMediaRec&&recMediaRec.state==='recording'){
+    recMediaRec.stop();
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    recChunksArr=[];
+    recMediaRec=new MediaRecorder(stream);
+    recMediaRec.ondataavailable=e=>recChunksArr.push(e.data);
+    recMediaRec.onstop=()=>{
+      recLineBlob=new Blob(recChunksArr,{type:'audio/webm'});
+      stream.getTracks().forEach(t=>t.stop());
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const s=recLines[recLineIdx];
+        const key='rec2_'+curLesson.id+'_'+recChar+'_'+encodeURIComponent(s.text.substring(0,30));
+        try{ localStorage.setItem(key,reader.result); }catch(e){}
+        document.getElementById('rec-line-status').textContent='✅ 录音已保存';
+        document.getElementById('rec-listen-btn').style.display='inline-block';
+        document.getElementById('rec-next-btn').style.display='block';
+        document.getElementById('rec-finish-btn').style.display=(recLineIdx===recLines.length-1)?'block':'none';
+        document.getElementById('rec-start-btn').textContent='⏺ 重新录';
+        document.getElementById('rec-start-btn').style.background='#888';
+      };
+      reader.readAsDataURL(recLineBlob);
+    };
+    recMediaRec.start();
+    const btn=document.getElementById('rec-start-btn');
+    btn.textContent='⏹ 停止录音';
+    btn.style.background='#d32f2f';
+    document.getElementById('rec-line-status').textContent='🔴 录音中…';
+  }).catch(()=>{
+    document.getElementById('rec-line-status').textContent='⚠️ 请允许麦克风权限';
+  });
+}
+function listenLine(){
+  const s=recLines[recLineIdx];
+  const key='rec2_'+curLesson.id+'_'+recChar+'_'+encodeURIComponent(s.text.substring(0,30));
+  const data=localStorage.getItem(key);
+  if(data){ new Audio(data).play(); }
+}
+function skipLine(){ recLineIdx++; showLine(); }
+function nextLine(){ recLineIdx++; showLine(); }
+function finishCharRec(){
+  document.getElementById('rec-line-status').textContent='';
+  buildCharList();
+  showCharList();
+}
+
 </script>
-</body>
-</html>
