@@ -195,7 +195,7 @@ body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)
 <!-- ══ 故事播放页 ══ -->
 <div class="screen" id="s-play">
   <div class="story-header">
-    <button id="rec-entry-btn" onclick="openRecStudio()" 
+    <button id="rec-entry-btn" onclick="openRecStudio()"
   style="position:absolute;right:16px;top:12px;background:#FFF3E8;border:1.5px solid #E87722;color:#E87722;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">
   🎙️ 录音
 </button>
@@ -6098,38 +6098,45 @@ function getZhVoices(){
   _zhVoices = all.filter(v => v.lang.startsWith('zh'));
   return _zhVoices;
 }
+let _enVoices = null;
+function getEnVoices(){
+  if(_enVoices) return _enVoices;
+  const all = speechSynthesis.getVoices();
+  _enVoices = all.filter(v => v.lang.startsWith('en'));
+  return _enVoices;
+}
 
-function deviceTTS(text, role, callback){
+function deviceTTS(text, role, isEn, callback){
   if(!('speechSynthesis' in window)){ callback(false); return; }
   speechSynthesis.cancel();
-  
+
   const cfg = DEVICE_VOICE_CONFIG[role] || DEVICE_VOICE_CONFIG.narrator;
   const utt = new SpeechSynthesisUtterance(text);
-  utt.lang = 'zh-CN';
+  utt.lang = isEn ? 'en-US' : 'zh-CN';
   utt.pitch = cfg.pitch;
   utt.rate  = cfg.rate;
   utt.volume = 1;
-  
-  // 选最合适的中文声音
-  const zhVoices = getZhVoices();
-  if(zhVoices.length > 0){
+
+  // 选最合适的声音（中文或英文）
+  const voiceList = isEn ? getEnVoices() : getZhVoices();
+  if(voiceList.length > 0){
     // 优先选符合性别的声音
-    const preferred = zhVoices.filter(v => {
+    const preferred = voiceList.filter(v => {
       const n = v.name.toLowerCase();
-      return cfg.gender === 'male' ? (n.includes('male')||n.includes('ming')||n.includes('yun')) 
-                                   : (n.includes('female')||n.includes('xiao')||n.includes('ling'));
+      return cfg.gender === 'male' ? (n.includes('male')||n.includes('ming')||n.includes('yun')||n.includes('david')||n.includes('mark'))
+                                   : (n.includes('female')||n.includes('xiao')||n.includes('ling')||n.includes('zira')||n.includes('samantha'));
     });
-    utt.voice = preferred.length > 0 ? preferred[0] : zhVoices[0];
+    utt.voice = preferred.length > 0 ? preferred[0] : voiceList[0];
   }
-  
+
   let done = false;
   utt.onend = () => { if(!done){done=true; document.getElementById('wave-bar').classList.remove('playing'); callback(true);} };
   utt.onerror = () => { if(!done){done=true; callback(false);} };
-  
+
   document.getElementById('wave-bar').classList.add('playing');
   currentAudio = { pause: () => speechSynthesis.cancel() };
   speechSynthesis.speak(utt);
-  
+
   // iOS 需要定期 resume
   const resumeTimer = setInterval(()=>{ if(speechSynthesis.paused) speechSynthesis.resume(); }, 200);
   utt.onend = () => { clearInterval(resumeTimer); if(!done){done=true; document.getElementById('wave-bar').classList.remove('playing'); callback(true);} };
@@ -6257,7 +6264,7 @@ function playCurrentSeg(){
   document.getElementById('loading-line').classList.add('on');
   document.getElementById('wave-bar').classList.remove('playing');
   const isEn=!!s.en;
-  
+
   // 优先使用家长录音
   const recKey='rec2_'+curLesson.id+'_'+s.role+'_'+encodeURIComponent(s.text.substring(0,30));
   const recData=localStorage.getItem(recKey);
@@ -6274,16 +6281,16 @@ function playCurrentSeg(){
     });
     return;
   }
-  // 中文用设备原生语音（iPhone/Android自带，更自然），英文继续用Azure
-  if(!isEn && s.role !== 'narrator' && 'speechSynthesis' in window){
-    deviceTTS(s.text, s.role, function(ok){
+  // 中文和英文都优先用设备原生语音（免费、不受 Azure 欠费影响），失败了再降级用Azure
+  if('speechSynthesis' in window){
+    deviceTTS(s.text, s.role, isEn, function(ok){
       document.getElementById('loading-line').classList.remove('on');
       if(!playing){busy=false;return;}
       busy=false;
       document.getElementById('wave-bar').classList.remove('playing');
       if(!ok){
         // 设备语音失败，降级用Azure
-        azureTTS(s.text, false, s.role).then(url=>{
+        azureTTS(s.text, isEn, s.role).then(url=>{
           if(!playing){busy=false;return;}
           document.getElementById('wave-bar').classList.add('playing');
           playOneAudio(url,()=>{busy=false;document.getElementById('wave-bar').classList.remove('playing');if(!playing)return;segIdx++;setTimeout(playCurrentSeg,80);});
@@ -6299,7 +6306,7 @@ function playCurrentSeg(){
     document.getElementById('loading-line').classList.remove('on');
     if(!playing){busy=false;return;}
     document.getElementById('wave-bar').classList.add('playing');
-    
+
     if(isEn){
       // 英文播放1遍（重复由段落数量自然控制）
       playEnTimes(url, 1, ()=>{
@@ -6755,5 +6762,6 @@ function finishCharRec(){
   buildCharList();
   showCharList();
 }
-
 </script>
+</body>
+</html>
