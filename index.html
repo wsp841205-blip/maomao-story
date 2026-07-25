@@ -6073,6 +6073,35 @@ function getSharedAudio(){
   return sharedAudio;
 }
 
+// ── 锁屏/后台播放支持：Media Session ──
+// 手机浏览器只有在页面被系统认定为"正在播放的媒体"时，才会允许锁屏后继续播放、
+// 并在锁屏界面显示可控制的播放条（暂停/上一句/下一句），否则息屏后播放大概率会被系统暂停。
+let _mediaSessionSetup = false;
+function setupMediaSession(){
+  if(_mediaSessionSetup) return;
+  if(!('mediaSession' in navigator)) return;
+  _mediaSessionSetup = true;
+  try{
+    navigator.mediaSession.setActionHandler('play', function(){ if(!playing) togglePlay(); });
+    navigator.mediaSession.setActionHandler('pause', function(){ if(playing) togglePlay(); });
+    navigator.mediaSession.setActionHandler('previoustrack', function(){ skipSeg(-1); });
+    navigator.mediaSession.setActionHandler('nexttrack', function(){ skipSeg(1); });
+  }catch(e){ console.warn('mediaSession action handler 设置失败:', e); }
+}
+
+function updateMediaSession(){
+  if(!('mediaSession' in navigator) || !curLesson) return;
+  try{
+    const s = curLesson.segments[segIdx];
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: (s ? s.text.substring(0,30) : curLesson.title),
+      artist: '第' + curLesson.id + '集 · ' + curLesson.title,
+      album: '猫猫的幼儿园故事'
+    });
+    navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
+  }catch(e){}
+}
+
 // ══ 播放状态 ══
 let curLesson=null, segIdx=0, playing=false, busy=false;
 let repeatTarget=1, curLoop=0;
@@ -6269,6 +6298,7 @@ function playCurrentSeg(){
   busy=true;
   const s=curLesson.segments[segIdx];
   updateSegDisplay();
+  updateMediaSession();
   document.getElementById('loading-line').classList.add('on');
   document.getElementById('wave-bar').classList.remove('playing');
   const isEn=!!s.en;
@@ -6369,6 +6399,7 @@ function playViaDeviceOrAzure(s, isEn){
 }
 
 function togglePlay(){
+  setupMediaSession();
   if(playing){
     playing=false; busy=false;
     if('speechSynthesis' in window) speechSynthesis.cancel();
@@ -6383,6 +6414,7 @@ function togglePlay(){
     document.getElementById('play-btn').className='ctrl-btn btn-pause';
     playCurrentSeg();
   }
+  updateMediaSession();
 }
 
 function jumpTo(i){
@@ -6404,6 +6436,8 @@ function jumpTo(i){
     playing=true;
   document.getElementById('play-btn').textContent='⏸ 暂停';
   document.getElementById('play-btn').className='ctrl-btn btn-pause';
+  setupMediaSession();
+  updateMediaSession();
   setTimeout(playCurrentSeg,300);
 }
 
@@ -6426,11 +6460,14 @@ function skipSeg(d){
     playing=true;
   document.getElementById('play-btn').textContent='⏸ 暂停';
   document.getElementById('play-btn').className='ctrl-btn btn-pause';
+  setupMediaSession();
+  updateMediaSession();
   setTimeout(playCurrentSeg,300);
 }
 
 function showFinish(){
   playing=false;
+  updateMediaSession();
   document.getElementById('play-btn').textContent='🔄 再听一遍';
   document.getElementById('play-btn').className='ctrl-btn btn-play';
   document.getElementById('progress-fill').style.width='100%';
