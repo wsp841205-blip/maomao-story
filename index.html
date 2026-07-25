@@ -6244,6 +6244,14 @@ function playEnTimes(url, times, onDone){
   });
 }
 
+// 根据集数、台词序号、角色，拼出预生成静态音频文件的路径
+// 要求：把 generate_all.py 生成的"音频"文件夹改名成"audio"后，整体上传到网站根目录下
+function getStaticAudioUrl(lesson, idx, seg){
+  const folder = String(lesson.id).padStart(2,'0') + '_' + lesson.title;
+  const file = String(idx+1).padStart(3,'0') + '_' + seg.role + '.mp3';
+  return 'audio/' + encodeURIComponent(folder) + '/' + encodeURIComponent(file);
+}
+
 function playCurrentSeg(){
   if(!playing||busy||!curLesson) return;
   if(segIdx>=curLesson.segments.length){
@@ -6281,6 +6289,30 @@ function playCurrentSeg(){
     });
     return;
   }
+  // 优先尝试播放预生成的静态音频文件（更省钱、更稳定、不依赖任何在线TTS服务）
+  // 如果文件不存在或加载失败，自动降级走原来的"设备语音→Azure"逻辑，绝不会静默跳过
+  const staticUrl = getStaticAudioUrl(curLesson, segIdx, s);
+  fetch(staticUrl, {method:'HEAD'}).then(function(r){
+    if(r.ok){
+      document.getElementById('loading-line').classList.remove('on');
+      if(!playing){busy=false;return;}
+      document.getElementById('wave-bar').classList.add('playing');
+      playOneAudio(staticUrl, function(){
+        busy=false;
+        document.getElementById('wave-bar').classList.remove('playing');
+        if(!playing) return;
+        segIdx++;
+        setTimeout(playCurrentSeg,80);
+      });
+    } else {
+      playViaDeviceOrAzure(s, isEn);
+    }
+  }).catch(function(){
+    playViaDeviceOrAzure(s, isEn);
+  });
+}
+
+function playViaDeviceOrAzure(s, isEn){
   // 中文和英文都优先用设备原生语音（免费、不受 Azure 欠费影响），失败了再降级用Azure
   if('speechSynthesis' in window){
     deviceTTS(s.text, s.role, isEn, function(ok){
