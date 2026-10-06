@@ -156,6 +156,61 @@ body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)
 #rec-mode-btn.active { background:#E87722; color:#fff; }
 .has-recording::after { content:'🎙️'; font-size:10px; margin-left:4px; }
 </style>
+<!-- ══ 百度统计 + 收听记录 ══ -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?e894a1499df2f492def1aa50c813e603";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+
+// 收听记录：谁(?from=名字)、听了哪一集、什么时候开始/听完、收听了多少秒
+var Trk = (function(){
+  var from = '';
+  try{
+    var q = new URLSearchParams(location.search).get('from');
+    if(q){ from = q.slice(0,20); try{ localStorage.setItem('mm_from', from); }catch(e){} }
+    else { try{ from = localStorage.getItem('mm_from') || ''; }catch(e){} }
+  }catch(e){}
+  if(from){ try{ _hmt.push(['_setCustomVar', 1, '来源', from, 1]); }catch(e){} }
+
+  var lessonLabel = '', started = false, pending = 0, lastTick = Date.now(), sinceFlush = 0;
+
+  function label(){ return lessonLabel + (from ? ' | ' + from : ''); }
+  function ev(action, val){
+    try{ _hmt.push(['_trackEvent', '收听', action, label(), val || 0]); }catch(e){}
+  }
+  function flush(){
+    if(pending >= 1 && lessonLabel){ ev('收听时长(秒)', Math.round(pending)); }
+    pending = 0; sinceFlush = 0;
+  }
+  setInterval(function(){
+    var now = Date.now(), d = (now - lastTick) / 1000; lastTick = now;
+    var isPlaying = (typeof playing !== 'undefined') && playing;
+    if(isPlaying && lessonLabel){
+      d = Math.min(d, 70);          // 后台/锁屏时定时器会变慢，最多按70秒算一次
+      pending += d; sinceFlush += d;
+      if(sinceFlush >= 30) flush();
+    }
+  }, 5000);
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) flush(); });
+  window.addEventListener('pagehide', flush);
+
+  return {
+    openLesson: function(l){
+      flush();
+      lessonLabel = (l.id === 0 ? '导读' : '第' + l.id + '集') + ' ' + l.title;
+      started = false;
+      ev('打开');
+      try{ _hmt.push(['_trackPageview', '/lesson/' + String(l.id).padStart(2,'0')]); }catch(e){}
+    },
+    started: function(){ if(!started && lessonLabel){ started = true; ev('开始播放'); } },
+    finished: function(){ flush(); ev('听完'); }
+  };
+})();
+</script>
 </head>
 <body>
 
@@ -189,6 +244,7 @@ body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)
       <div class="cover-sub">跟着小花猫猫猫，<br>从害怕到喜欢幼儿园，<br>一起学英语，一起长大。</div>
     </div>
     <div id="lesson-list"></div>
+    <div style="text-align:center;font-size:11px;color:#aaa;margin:18px 0 28px;line-height:1.6">本页面会匿名记录收听次数和时长，仅用于改进内容。</div>
   </div>
 </div>
 
@@ -6410,6 +6466,7 @@ function togglePlay(){
     document.getElementById('play-btn').className='ctrl-btn btn-play';
   } else {
     playing=true;
+    try{ Trk.started(); }catch(e){}
     document.getElementById('play-btn').textContent='⏸ 暂停';
     document.getElementById('play-btn').className='ctrl-btn btn-pause';
     playCurrentSeg();
@@ -6434,6 +6491,7 @@ function jumpTo(i){
     if(_pu) _pu.then(function(){ _ua.pause(); _ua.volume=1; audioUnlocked=true; }).catch(function(){ _ua.volume=1; });
   })();
     playing=true;
+  try{ Trk.started(); }catch(e){}
   document.getElementById('play-btn').textContent='⏸ 暂停';
   document.getElementById('play-btn').className='ctrl-btn btn-pause';
   setupMediaSession();
@@ -6458,6 +6516,7 @@ function skipSeg(d){
     if(_pu) _pu.then(function(){ _ua.pause(); _ua.volume=1; audioUnlocked=true; }).catch(function(){ _ua.volume=1; });
   })();
     playing=true;
+  try{ Trk.started(); }catch(e){}
   document.getElementById('play-btn').textContent='⏸ 暂停';
   document.getElementById('play-btn').className='ctrl-btn btn-pause';
   setupMediaSession();
@@ -6467,6 +6526,7 @@ function skipSeg(d){
 
 function showFinish(){
   playing=false;
+  try{ Trk.finished(); }catch(e){}
   updateMediaSession();
   document.getElementById('play-btn').textContent='🔄 再听一遍';
   document.getElementById('play-btn').className='ctrl-btn btn-play';
@@ -6638,6 +6698,7 @@ function openLesson(idx){
   }
   curLesson=LESSONS[idx];
   segIdx=0; playing=false; busy=false; curLoop=0;
+  try{ Trk.openLesson(curLesson); }catch(e){}
   if('speechSynthesis' in window) speechSynthesis.cancel();
     if(currentAudio){try{currentAudio.pause();}catch(e){} currentAudio=null;}
   document.getElementById('play-title').textContent=(curLesson.id===0?'':('第'+curLesson.id+'集 · '))+curLesson.title;
