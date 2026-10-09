@@ -33,6 +33,16 @@ body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .cover-title{font-size:28px;font-weight:900;color:var(--green);margin-bottom:6px}
 .cover-sub{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.cover-hero{padding-top:22px}
+.cover-hero .cover-emoji{font-size:64px;margin-bottom:8px}
+.cover-kicker{font-size:13px;letter-spacing:2px;color:var(--text2);font-weight:700;margin-bottom:6px}
+.cover-title-lg{font-size:36px;letter-spacing:3px;margin-bottom:2px}
+.cover-en{font-size:16px;color:var(--text2);letter-spacing:1px;margin-bottom:16px}
+.cover-divider{width:56px;height:3px;border-radius:3px;background:var(--green);opacity:.45;margin:0 auto 16px}
+.cover-desc{font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px}
+.cover-tagline{font-size:14px;color:var(--text2);margin-bottom:16px}
+.cover-sub-sm{font-size:13px;opacity:.85;margin-bottom:14px}
+.cover-author{font-size:12px;color:var(--text2);opacity:.8;margin-bottom:6px}
 
 /* ── 故事列表 ── */
 .phase-title{font-size:12px;font-weight:800;color:var(--text2);padding:12px 4px 6px;letter-spacing:1px;text-transform:uppercase}
@@ -240,8 +250,14 @@ var Trk = (function(){
   <div class="wrap">
     <div class="cover-hero">
       <span class="cover-emoji">🐱</span>
-      <div class="cover-title">猫猫的幼儿园故事</div>
-      <div class="cover-sub">跟着小花猫猫猫，<br>从害怕到喜欢幼儿园，<br>一起学英语，一起长大。</div>
+      <div class="cover-kicker">猫猫和朋友们 · 原创出品</div>
+      <div class="cover-title cover-title-lg">猫猫上幼儿园</div>
+      <div class="cover-en">Maomao and Friends</div>
+      <div class="cover-divider"></div>
+      <div class="cover-desc">20篇帮助孩子适应幼儿园的原创音频故事</div>
+      <div class="cover-tagline">陪孩子，用自己的方式长大。</div>
+      <div class="cover-sub cover-sub-sm">跟着小花猫猫猫，<br>从害怕到喜欢幼儿园，<br>一起学英语，一起长大。</div>
+      <div class="cover-author">原创作者：万安妈妈 &nbsp;©&nbsp;2026</div>
     </div>
     <div id="lesson-list"></div>
     <div style="text-align:center;font-size:11px;color:#aaa;margin:18px 0 28px;line-height:1.6">本页面会匿名记录收听次数和时长，仅用于改进内容。</div>
