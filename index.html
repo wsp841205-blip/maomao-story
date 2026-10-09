@@ -6081,7 +6081,7 @@ const ROLES = {
 };
 
 // ══ Azure TTS ══
-const AZURE_KEY='6bvKC0gCcWt3APGtBuisYzITStAs0DCTmWaLld9Azy4iwRhDfP87JQQJ99CFAC3pKaRXJ3w3AAAYACOGI0gY';
+const AZURE_KEY=''; // 已移除公开密钥；留空时不再调用 Azure，播放走预生成音频→设备语音
 const AZURE_REGION='eastasia';
 
 // ══ 角色声音配置（已验证可用）══
@@ -6248,6 +6248,7 @@ function deviceTTS(text, role, isEn, callback){
 }
 
 async function azureTTS(text, isEn, role){
+  if(!AZURE_KEY) throw new Error('Azure disabled');
   const cacheKey=(isEn?'en:':'zh:')+text;
   if(audioCache[cacheKey]) return audioCache[cacheKey];
   const voice = isEn ? EN_VOICE : (VOICES[role]||VOICES.narrator).voice;
